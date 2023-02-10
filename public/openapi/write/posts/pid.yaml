@@ -64,6 +64,8 @@ get:
                     type: boolean
                   downvoted:
                     type: boolean
+                  isAnon:
+                    type: number
 put:
   tags:
     - posts
