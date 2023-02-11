@@ -5,6 +5,7 @@ const _ = require('lodash');
 
 const categories = require('../categories');
 const meta = require('../meta');
+const posts = require('../posts');
 const pagination = require('../pagination');
 const helpers = require('./helpers');
 const privileges = require('../privileges');
@@ -55,6 +56,12 @@ categoriesController.list = async function (req, res) {
             property: 'og:title',
             content: '[[pages:categories]]',
         });
+    }
+
+    for await (const c of data.categories) {
+        for await (const p of c.posts) {
+            p.isAnon = await posts.getPostField(p.pid, 'isAnon');
+        }
     }
 
     res.render('categories', data);

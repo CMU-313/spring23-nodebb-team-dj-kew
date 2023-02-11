@@ -12,7 +12,7 @@ const intFields = [
     'tid', 'cid', 'uid', 'mainPid', 'postcount',
     'viewcount', 'postercount', 'deleted', 'locked', 'pinned',
     'pinExpiry', 'timestamp', 'upvotes', 'downvotes', 'lastposttime',
-    'deleterUid', 'isAnon',
+    'deleterUid',
 ];
 
 module.exports = function (Topics) {
@@ -121,6 +121,10 @@ function modifyTopic(topic, fields) {
 
     if (topic.hasOwnProperty('upvotes') && topic.hasOwnProperty('downvotes')) {
         topic.votes = topic.upvotes - topic.downvotes;
+    }
+
+    if (topic.hasOwnProperty('isAnon')) {
+        topic.isAnon = topic.isAnon === 'true';
     }
 
     if (fields.includes('teaserPid') || !fields.length) {
