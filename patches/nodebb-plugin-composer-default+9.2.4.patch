@@ -1,0 +1,104 @@
+diff --git a/node_modules/nodebb-plugin-composer-default/static/lib/composer.js b/node_modules/nodebb-plugin-composer-default/static/lib/composer.js
+index 46334e7..5d8b3ba 100644
+--- a/node_modules/nodebb-plugin-composer-default/static/lib/composer.js
++++ b/node_modules/nodebb-plugin-composer-default/static/lib/composer.js
+@@ -320,6 +320,7 @@ define('composer', [
+ 
+ 		var bodyEl = postContainer.find('textarea');
+ 		var submitBtn = postContainer.find('.composer-submit');
++		var submitAnonBtn = postContainer.find('.composer-submit-anon');
+ 
+ 		categoryList.init(postContainer, composer.posts[post_uuid]);
+ 		scheduler.init(postContainer, composer.posts);
+@@ -348,6 +349,14 @@ define('composer', [
+ 			post(post_uuid);
+ 		});
+ 
++		submitAnonBtn.on('click', function (e) {
++			e.preventDefault();
++			e.stopPropagation();	// Other click events bring composer back to active state which is undesired on submit
++
++			$(this).attr('disabled', true);
++			post(post_uuid, true);
++		});
++
+ 		require(['mousetrap'], function (mousetrap) {
+ 			mousetrap(postContainer.get(0)).bind('mod+enter', function () {
+ 				submitBtn.attr('disabled', true);
+@@ -622,7 +631,9 @@ define('composer', [
+ 		}, 20);
+ 	}
+ 
+-	async function post(post_uuid) {
++	async function post(post_uuid, isAnon) {
++		console.log("post method");
++		console.log({isAnon});
+ 		var postData = composer.posts[post_uuid];
+ 		var postContainer = $('.composer[data-uuid="' + post_uuid + '"]');
+ 		var handleEl = postContainer.find('.handle');
+@@ -631,6 +642,7 @@ define('composer', [
+ 		var thumbEl = postContainer.find('input#topic-thumb-url');
+ 		var onComposeRoute = postData.hasOwnProperty('template') && postData.template.compose === true;
+ 		const submitBtn = postContainer.find('.composer-submit');
++		const submitAnonBtn = postContainer.find('.composer-submit-anon');
+ 
+ 		titleEl.val(titleEl.val().trim());
+ 		bodyEl.val(utils.rtrim(bodyEl.val()));
+@@ -696,6 +708,7 @@ define('composer', [
+ 				cid: categoryList.getSelectedCid(),
+ 				tags: tags.getTags(post_uuid),
+ 				timestamp: scheduler.getTimestamp(),
++				isAnon,
+ 			};
+ 		} else if (action === 'posts.reply') {
+ 			route = `/topics/${postData.tid}`;
+@@ -705,6 +718,7 @@ define('composer', [
+ 				handle: handleEl ? handleEl.val() : undefined,
+ 				content: bodyEl.val(),
+ 				toPid: postData.toPid,
++				isAnon,
+ 			};
+ 		} else if (action === 'posts.edit') {
+ 			method = 'put';
+@@ -718,6 +732,7 @@ define('composer', [
+ 				thumb: thumbEl.val() || '',
+ 				tags: tags.getTags(post_uuid),
+ 				timestamp: scheduler.getTimestamp(),
++				isAnon,
+ 			};
+ 		}
+ 		var submitHookData = {
+@@ -741,6 +756,7 @@ define('composer', [
+ 		api[method](route, composerData)
+ 			.then((data) => {
+ 				submitBtn.removeAttr('disabled');
++				submitAnonBtn.removeAttr('disabled');
+ 				postData.submitted = true;
+ 
+ 				composer.discard(post_uuid);
+diff --git a/node_modules/nodebb-plugin-composer-default/static/templates/compose.tpl b/node_modules/nodebb-plugin-composer-default/static/templates/compose.tpl
+index 8ce50b9..88f550b 100644
+--- a/node_modules/nodebb-plugin-composer-default/static/templates/compose.tpl
++++ b/node_modules/nodebb-plugin-composer-default/static/templates/compose.tpl
+@@ -81,6 +81,8 @@
+ 					<a href="{discardRoute}" class="btn btn-default composer-discard" data-action="discard" tabindex="-1"><i class="fa fa-times"></i> [[topic:composer.discard]]</a>
+ 
+ 					<button type="submit" form="compose-form" class="btn btn-primary composer-submit" data-action="post" tabindex="6" data-text-variant=" [[topic:composer.schedule]]"><i class="fa fa-check"></i> [[topic:composer.submit]]</button>
++
++					<button type="submit" form="compose-form" class="btn btn-info composer-submit-anon" data-action="post" tabindex="6" data-text-variant=" [[topic:composer.schedule]] as Anonymous"><i class="fa fa-check"></i> [[topic:composer.submit]] as Anonymous</button>
+ 				</div>
+ 			</div>
+ 		</div>
+diff --git a/node_modules/nodebb-plugin-composer-default/static/templates/composer.tpl b/node_modules/nodebb-plugin-composer-default/static/templates/composer.tpl
+index cf9de24..ad95601 100644
+--- a/node_modules/nodebb-plugin-composer-default/static/templates/composer.tpl
++++ b/node_modules/nodebb-plugin-composer-default/static/templates/composer.tpl
+@@ -56,6 +56,8 @@
+ 
+ 				<ul class="dropdown-menu">{{{ each submitOptions }}}<li><a href="#" data-action="{./action}">{./text}</a></li>{{{ end }}}</ul>
+ 				<button class="btn btn-primary composer-submit" data-action="post" tabindex="6" data-text-variant=" [[topic:composer.schedule]]"><i class="fa fa-check"></i> [[topic:composer.submit]]</button>
++				<button class="btn btn-info composer-submit-anon" data-action="post" tabindex="6" data-text-variant=" [[topic:composer.schedule]] as Anonymous"><i class="fa fa-check"></i> [[topic:composer.submit]] as Anonymous</button>
++
+ 				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+ 					<span class="caret"></span>
+ 					<span class="sr-only">[[topic:composer.additional-options]]</span>
