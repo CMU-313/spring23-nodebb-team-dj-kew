@@ -65,7 +65,9 @@ get:
                   downvoted:
                     type: boolean
                   isAnon:
-                    type: number
+                    type: boolean
+                required:
+                  - pid, uid, tid, content, timestamp, flagId, deleted, upvotes, downvotes, deleterUid, edited
 put:
   tags:
     - posts

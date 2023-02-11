@@ -25,6 +25,9 @@ PostObject:
     timestampISO:
       type: string
       description: An ISO 8601 formatted date string (complementing `timestamp`)
+    isAnon:
+      nullable: true
+      type: boolean
     user:
       type: object
       properties:
@@ -100,6 +103,9 @@ PostObject:
         isMainPost:
           type: boolean
         renamed:
+          type: boolean
+        isAnon:
+          nullable: true 
           type: boolean
         tags:
           type: array

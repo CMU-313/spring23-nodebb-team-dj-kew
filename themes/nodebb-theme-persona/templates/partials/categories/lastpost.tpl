@@ -4,7 +4,10 @@
     <div component="category/posts">
         <a class="background-link" href="{config.relative_path}/topic/{../topic.slug}<!-- IF ../index -->/{../index}<!-- ENDIF ../index -->"></a>
         <p>
+            <!-- IF posts.isAnon -->
+            <!-- ELSE -->
             <a href="{config.relative_path}/user/{../user.userslug}">{buildAvatar(posts.user, "sm", true)}</a>
+            <!-- END -->
             <a class="permalink" href="{config.relative_path}/topic/{../topic.slug}<!-- IF ../index -->/{../index}<!-- ENDIF ../index -->">
                 <small class="timeago" title="{../timestampISO}"></small>
             </a>

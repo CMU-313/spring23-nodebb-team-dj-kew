@@ -163,6 +163,9 @@ TopicObject:
           type: number
         unreplied:
           type: boolean
+        isAnon:
+          nullable: true
+          type: boolean
         icons:
           type: array
           items:
@@ -234,6 +237,9 @@ TopicObjectSlim:
           description: An ISO 8601 formatted date string (complementing `timestamp`)
         lastposttime:
           type: number
+        isAnon:
+          type: boolean
+          nullable: true
         lastposttimeISO:
           type: string
           description: An ISO 8601 formatted date string (complementing `lastposttime`)
