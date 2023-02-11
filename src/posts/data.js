@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,36 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-const database_1 = __importDefault(require("../database"));
-const plugins_1 = __importDefault(require("../plugins"));
-const utils_1 = __importDefault(require("../utils"));
+const db = require('../database');
+const plugins = require('../plugins');
+const utils = require('../utils');
 const intFields = [
     'uid', 'pid', 'tid', 'deleted', 'timestamp',
     'upvotes', 'downvotes', 'deleterUid', 'edited',
     'replies', 'bookmarks',
 ];
-function modifyPost(post, fields) {
-    if (post) {
-        // The next line calls a function in a module that has not been updated to TS yet
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        database_1.default.parseIntFields(post, intFields, fields);
-        if (post.hasOwnProperty('upvotes') && post.hasOwnProperty('downvotes')) {
-            post.votes = post.upvotes - post.downvotes;
-        }
-        if (post.hasOwnProperty('timestamp')) {
-            post.timestampISO = utils_1.default.toISOString(post.timestamp);
-        }
-        if (post.hasOwnProperty('edited')) {
-            post.editedISO = (post.edited !== 0 ? utils_1.default.toISOString(post.edited) : '');
-        }
-        if (post.hasOwnProperty('isAnon')) {
-            post.isAnon = post.isAnon === 'true' || post.isAnon === true;
-        }
-    }
-}
 module.exports = function (Posts) {
     Posts.getPostsFields = function (pids, fields) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -45,10 +23,8 @@ module.exports = function (Posts) {
                 return [];
             }
             const keys = pids.map(pid => `post:${pid}`);
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            const postData = yield database_1.default.getObjects(keys, fields);
-            const result = yield plugins_1.default.hooks.fire('filter:post.getFields', {
+            const postData = yield db.getObjects(keys, fields);
+            const result = yield plugins.hooks.fire('filter:post.getFields', {
                 pids: pids,
                 posts: postData,
                 fields: fields,
@@ -87,10 +63,25 @@ module.exports = function (Posts) {
     };
     Posts.setPostFields = function (pid, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            yield database_1.default.setObject(`post:${pid}`, data);
-            yield plugins_1.default.hooks.fire('action:post.setFields', { data: Object.assign(Object.assign({}, data), { pid }) });
+            yield db.setObject(`post:${pid}`, data);
+            plugins.hooks.fire('action:post.setFields', { data: Object.assign(Object.assign({}, data), { pid }) });
         });
     };
 };
+function modifyPost(post, fields) {
+    if (post) {
+        db.parseIntFields(post, intFields, fields);
+        if (post.hasOwnProperty('upvotes') && post.hasOwnProperty('downvotes')) {
+            post.votes = post.upvotes - post.downvotes;
+        }
+        if (post.hasOwnProperty('timestamp')) {
+            post.timestampISO = utils.toISOString(post.timestamp);
+        }
+        if (post.hasOwnProperty('edited')) {
+            post.editedISO = post.edited !== 0 ? utils.toISOString(post.edited) : '';
+        }
+        if (post.hasOwnProperty('isAnon')) {
+            post.isAnon = post.isAnon === 'true';
+        }
+    }
+}
