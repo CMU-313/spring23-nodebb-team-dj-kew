@@ -125,8 +125,6 @@ function modifyTopic(topic, fields) {
 
     if (topic.hasOwnProperty('isAnon')) {
         topic.isAnon = topic.isAnon === 'true';
-    } else {
-        topic.isAnon = false;
     }
 
     if (fields.includes('teaserPid') || !fields.length) {

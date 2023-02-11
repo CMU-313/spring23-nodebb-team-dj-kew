@@ -58,11 +58,9 @@ categoriesController.list = async function (req, res) {
         });
     }
 
-    for (let i = 0; i < data.categories.length; i++) {
-        const c = data.categories[i];
-        for (let j = 0; j < c.posts.length; j++) {
-            const p = c.posts[j];
-            p.isAnon = posts.getPostField(p.pid, 'isAnon');
+    for await (const c of data.categories) {
+        for await (const p of c.posts) {
+            p.isAnon = await posts.getPostField(p.pid, 'isAnon');
         }
     }
 
