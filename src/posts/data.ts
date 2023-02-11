@@ -1,8 +1,7 @@
 import db from '../database';
 import plugins from '../plugins';
-import { PostObject } from '../types';
+import { PostObject, OptionalPost, OptionalPostList, PostsMethods, PostsWrapper } from '../types';
 import utils from '../utils';
-import { OptionalPost, OptionalPostList, PostsMethods, PostsWrapper } from './types';
 
 const intFields = [
     'uid', 'pid', 'tid', 'deleted', 'timestamp',
@@ -39,17 +38,15 @@ export = function (Posts: PostsMethods) {
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         const postData = await db.getObjects(keys, fields) as OptionalPostList;
-        console.log("post data: ", postData);
         const result = await plugins.hooks.fire('filter:post.getFields', {
             pids: pids,
             posts: postData,
             fields: fields,
         }) as PostsWrapper;
-        console.log("result: ", result)
         result.posts.forEach(post => modifyPost(post, fields));
         return result.posts;
     };
-  
+
 
     Posts.getPostData = async function (pid) {
         const posts = await Posts.getPostsFields([pid], []);
@@ -80,7 +77,7 @@ export = function (Posts: PostsMethods) {
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         await db.setObject(`post:${pid}`, data);
-        plugins.hooks.fire('action:post.setFields', { data: { ...data, pid } });
+        await plugins.hooks.fire('action:post.setFields', { data: { ...data, pid } });
     };
 };
 

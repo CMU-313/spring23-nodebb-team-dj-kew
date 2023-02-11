@@ -155,7 +155,6 @@ describe('Post\'s', () => {
 
     it('should return falsy if post does not exist', (done) => {
         posts.getPostData(9999, (err, postData) => {
-            console.log("Got: ", postData);
             assert.ifError(err);
             assert.equal(postData, null);
             done();

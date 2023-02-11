@@ -5,8 +5,7 @@ import user from '../user';
 import plugins from '../plugins';
 import categories from '../categories';
 import utils from '../utils';
-import { PostSummaryOptions, PostsMethods, PostsWrapper, TopicsAndCategories } from './types';
-import { CategoryObject, PostObject, TopicObject, UserObject } from '../types';
+import { PostSummaryOptions, PostsMethods, PostsWrapper, TopicsAndCategories, CategoryObject, PostObject, TopicObject, UserObject } from '../types';
 
 export = function (Posts : PostsMethods) {
     function toObject(key: string, data: UserObject[] | TopicObject[] | CategoryObject[]) {
@@ -51,7 +50,7 @@ export = function (Posts : PostsMethods) {
             if (!post.content || !options.parse) {
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-                post.content = post.content ? validator.escape(String(post.content)) as string : post.content;
+                post.content = post.content ? validator.escape(String(post.content)) : post.content;
                 return post;
             }
             post = await Posts.parsePost(post);

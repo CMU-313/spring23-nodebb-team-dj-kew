@@ -45,3 +45,38 @@ export type PostObjectPartial = {
   editedISO?: string;
   isAnon?: boolean | string;
 }
+
+export type PostField = number | string | boolean | TopicObject | CategoryObject | UserObjectSlim | null;
+
+export type OptionalPost = PostObject | null;
+
+export type OptionalPostList = OptionalPost[] | null;
+
+export interface PostsWrapper {
+    posts?: OptionalPostList;
+}
+
+export interface TopicsAndCategories {
+    topics?: TopicObject[];
+    categories?: CategoryObject[];
+}
+
+export interface PostSummaryOptions {
+    stripTags?: boolean;
+    parse?: boolean;
+    extraFields?: string[];
+}
+
+export interface PostsMethods {
+    getPostsFields: (pids: number[], fields: (keyof PostObject)[]) => Promise<OptionalPostList>
+    getPostData: (pid: number) => Promise<OptionalPost>;
+    getPostsData: (pids: number[]) => Promise<OptionalPostList>;
+    getPostField: (pid: number, field: (keyof PostObject)) => Promise<PostField>;
+    getPostFields: (pid: number, fields: (keyof PostObject)[]) => Promise<OptionalPost>;
+    setPostField: (pid: number, field: (keyof PostObject), value: PostField) => Promise<void>;
+    setPostFields: (pid: number, data: PostObject) => Promise<void>;
+    getPostSummaryByPids: (pids: number[], uid: number, options: PostSummaryOptions) => Promise<OptionalPostList>;
+    parsePost: (post: OptionalPost) => Promise<OptionalPost>;
+    overrideGuestHandle: (post: PostObject, handle: string) => void;
+}
+
