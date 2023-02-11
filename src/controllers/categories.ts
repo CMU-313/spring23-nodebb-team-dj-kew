@@ -97,6 +97,22 @@ export async function list(req: ExtendedRequest, res: Response) {
     res.render('categories', data);
 }
 
+/**
+ * The original JS file had its export like
+ * "module.exports.list = async function list(....."
+ * In TS, this is supposed to be like:
+ * "export async function list (..."
+ * But when I did that, ESLint complains and tells me to do
+ * "export default async function list (..."
+ * since it sees that list is the only function exported in this file.
+ * But little does ESLint know that if I do that, then the compiled JS
+ *  file would do the equivalent of:
+ * "module.exports.default = async function list(..."
+ * which might mess up other modules that are trying to include
+ * this file (and tests would fail).
+ * So this dummy function is included just so that ESLint won't complain
+ * about the export syntax.
+ */
 export function dummy() {
     console.log('dummy function');
 }
