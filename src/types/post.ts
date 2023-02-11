@@ -8,7 +8,7 @@ export type PostObject = {
   content: string;
   uid: number;
   timestamp: number;
-  deleted: boolean;
+  deleted: boolean | number;
   upvotes: number;
   downvotes: number;
   votes: number;
@@ -16,6 +16,32 @@ export type PostObject = {
   user: UserObjectSlim;
   topic: TopicObject;
   category: CategoryObject;
-  isMainPost: boolean;
+  isMainPost: boolean | number;
   replies: number;
+  handle: string;
+  edited?: boolean | number;
+  editedISO?: string;
+  isAnon?: boolean | string;
 };
+
+export type PostObjectPartial = {
+  pid?: number;
+  tid?: number;
+  content?: string;
+  uid?: number;
+  timestamp?: number;
+  deleted?: boolean | number;
+  upvotes?: number;
+  downvotes?: number;
+  votes?: number;
+  timestampISO?: string;
+  user?: UserObjectSlim;
+  topic?: TopicObject;
+  category?: CategoryObject;
+  isMainPost?: boolean | number;
+  replies?: number;
+  handle?: string;
+  edited?: boolean | number;
+  editedISO?: string;
+  isAnon?: boolean | string;
+}
