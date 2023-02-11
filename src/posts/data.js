@@ -67,5 +67,11 @@ function modifyPost(post, fields) {
         if (post.hasOwnProperty('edited')) {
             post.editedISO = post.edited !== 0 ? utils.toISOString(post.edited) : '';
         }
+
+        if (post.hasOwnProperty('isAnon')) {
+            post.isAnon = post.isAnon === 'true';
+        } else {
+            post.isAnon = false;
+        }
     }
 }

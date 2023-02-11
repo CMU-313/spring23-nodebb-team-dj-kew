@@ -139,6 +139,8 @@ categoryController.get = async function (req, res, next) {
 
     analytics.increment([`pageviews:byCid:${categoryData.cid}`]);
 
+    console.log(categoryData);
+
     res.render('category', categoryData);
 };
 

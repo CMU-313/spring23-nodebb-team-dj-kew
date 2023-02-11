@@ -123,6 +123,12 @@ function modifyTopic(topic, fields) {
         topic.votes = topic.upvotes - topic.downvotes;
     }
 
+    if (topic.hasOwnProperty('isAnon')) {
+        topic.isAnon = topic.isAnon === 'true';
+    } else {
+        topic.isAnon = false;
+    }
+
     if (fields.includes('teaserPid') || !fields.length) {
         topic.teaserPid = topic.teaserPid || null;
     }

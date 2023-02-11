@@ -120,18 +120,7 @@ topicsController.get = async function getTopic(req, res, next) {
         res.locals.linkTags.push(rel);
     });
 
-    
-
-    // for (let i = 0; i < topicData.posts.length; i++) {
-    //     let p = topicData.posts[i];
-    //     p.isAnon = (p.isAnon == 1);
-        // posts.setPostField(p.pid, 'isAnon', false);
-    // }
-    // console.log("ALSKDFLAKSDFGLASD");
-    // console.log(topicData);
-
     res.render('topic', topicData);
-    // res.render('topic', null)
 };
 
 function generateQueryString(query) {
