@@ -58,17 +58,12 @@ categoriesController.list = async function (req, res) {
         });
     }
 
-    // console.log(data)
     for (let i = 0; i < data.categories.length; i++) {
         const c = data.categories[i];
         for (let j = 0; j < c.posts.length; j++) {
             const p = c.posts[j];
             p.isAnon = posts.getPostField(p.pid, 'isAnon');
         }
-    }
-
-    for (let i = 0; i < data.categories.length; i++) {
-        console.log(data.categories[i].posts);
     }
 
     res.render('categories', data);
