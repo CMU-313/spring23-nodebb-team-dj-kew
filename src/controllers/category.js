@@ -4,6 +4,7 @@
 const nconf = require('nconf');
 const validator = require('validator');
 const qs = require('querystring');
+
 const db = require('../database');
 const privileges = require('../privileges');
 const user = require('../user');
