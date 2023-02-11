@@ -139,7 +139,7 @@ module.exports = function (Topics) {
                 postObj.votes = postObj.votes || 0;
                 postObj.replies = replies[i];
                 postObj.selfPost = parseInt(uid, 10) > 0 && parseInt(uid, 10) === postObj.uid;
-                
+
                 // Username override for guests, if enabled
                 if (meta.config.allowGuestHandles && postObj.uid === 0 && postObj.handle) {
                     postObj.user.username = validator.escape(String(postObj.handle));
