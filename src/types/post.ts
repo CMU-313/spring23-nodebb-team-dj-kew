@@ -50,6 +50,12 @@ export type PostObjectPartial = {
   cid?: number;
   isMain?: boolean;
   index?: number;
+  bookmarked?: boolean;
+  display_edit_tools?: true;
+  display_delete_tools?: boolean;
+  display_moderator_tools?: boolean;
+  display_move_tools?: boolean;
+  selfPost?: boolean;
 }
 
 export type PostField = number | string | boolean | TopicObject | CategoryObject | UserObjectSlim | null;
@@ -89,7 +95,7 @@ export interface PostsMethods {
     parsePost: (post: OptionalPost) => Promise<OptionalPost>;
     overrideGuestHandle: (post: PostObject, handle: string) => void;
 
-    create: (data: PostObjectPartial) => Promise<PostObject>;
+    create: (data: PostObjectPartial) => Promise<PostObject | PostObjectPartial>;
     uploads: any;
 }
 

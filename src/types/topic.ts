@@ -68,6 +68,7 @@ export type TopicData = {
   fromQueue?: boolean;
   req?: Request;
   ip?: number;
+  handle?: string;
 }
 
 export type OptionalTopic = TopicObject | null;
@@ -80,6 +81,10 @@ export type TopicField =
 
 export interface TopicsWrapper {
   topics?: OptionalTopicList
+}
+
+export interface TopicWrapper {
+  topic?: TopicData | null;
 }
 
 export type TopicObjectCoreProperties = {
@@ -189,7 +194,7 @@ export interface TopicMethods {
 
   getTopicsByTids: (tids: number[], uid: number | string) => Promise<OptionalTopic[]>;
   follow: (tid: number, uid: number | string) => Promise<void>;
-  delete: (tid: number) => void;
+  delete: (tid: number) => Promise<void>;
 
   reply: (data: TopicData) => Promise<PostObjectPartial>;
   notifyFollowers: (postData: PostObjectPartial, uid: number | string, obj: {
