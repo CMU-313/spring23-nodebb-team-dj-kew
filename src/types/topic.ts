@@ -44,6 +44,21 @@ export type TopicObject = {
   thumbs: Thumb[];
 }
 
+export type TopicData = {
+  tid: number;
+  uid: number;
+  cid: number;
+  mainPid: number;
+  title: string;
+  slug: string;
+  timestamp: number;
+  lastposttime: number;
+  postcount: number;
+  viewcount: number;
+  isAnon: boolean | string;
+  tags?: string;
+}
+
 export type OptionalTopic = TopicObject | null;
 
 export type OptionalTopicList = OptionalTopic[] | null;
