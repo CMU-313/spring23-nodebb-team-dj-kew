@@ -1,4 +1,5 @@
 import { CategoryObject, OptionalCategory } from './category';
+import { PostObjectPartial } from './post';
 import { TagObject } from './tag';
 import { UserObjectSlim } from './user';
 
@@ -22,7 +23,7 @@ export type TopicObject = {
   index?: number;
   timestampISO?: string | number;
   scheduled?: boolean | string;
-  uid: number;
+  uid: number | string;
   cid: number;
   title: string;
   slug: string;
@@ -42,21 +43,31 @@ export type TopicObject = {
   votes: number;
   teaserPid: number | string;
   thumbs: Thumb[];
+  mainPost?: PostObjectPartial;
+
+}
+
+export type Request = {
+  ip?: number;
 }
 
 export type TopicData = {
-  tid: number;
-  uid: number;
-  cid: number;
-  mainPid: number;
-  title: string;
-  slug: string;
-  timestamp: number;
-  lastposttime: number;
-  postcount: number;
-  viewcount: number;
-  isAnon: boolean | string;
-  tags?: string;
+  tid?: number;
+  uid?: number | string;
+  cid?: number;
+  mainPid?: number;
+  title?: string;
+  slug?: string;
+  timestamp?: number;
+  lastposttime?: number | string;
+  postcount?: number | string;
+  viewcount?: number | string;
+  isAnon?: boolean | string;
+  tags?: string | undefined[] | TagObject[];
+  content?: string;
+  fromQueue?: boolean;
+  req?: Request;
+  ip?: number;
 }
 
 export type OptionalTopic = TopicObject | null;
@@ -98,7 +109,7 @@ export type TopicObjectOptionalProperties = {
 
 interface Teaser {
   pid: number;
-  uid: number;
+  uid: number | string;
   timestamp: number;
   tid: number;
   content: string;
@@ -111,7 +122,7 @@ export type TopicObjectSlim = TopicSlimProperties & TopicSlimOptionalProperties;
 
 export type TopicSlimProperties = {
   tid: number;
-  uid: number;
+  uid: number | string;
   cid: number;
   title: string;
   slug: string;
@@ -149,7 +160,10 @@ export type TopicSlimOptionalProperties = {
   numThumbs: number;
 };
 
-
+export type TopicPostData = {
+  topicData?: TopicData;
+  postData?: PostObjectPartial;
+}
 
 export interface TopicMethods {
   getTopicsFields: (tids: number[], fields: string[]) => Promise<OptionalTopicList>;
@@ -162,4 +176,31 @@ export interface TopicMethods {
   setTopicFields: (tid: number, data: OptionalTopic) => Promise<void>;
   deleteTopicField: (tid: number, field: string) => Promise<void>;
   deleteTopicFields: (tid: number, fields: string[]) => Promise<void>;
+
+  create: (data: TopicData) => Promise<number>;
+  createTags: (tags: string | undefined[] | TagObject[], tid: number, timestamp: number) => Promise<void>;
+  scheduled: any;
+
+  post: (data: TopicData) => Promise<TopicPostData>;
+  checkTitle: (title: string) => void;
+  validateTags: (tags: string | undefined[] | TagObject[], cid: number, uid: number | string) => Promise<void>;
+  filterTags: (tags: string | undefined[] | TagObject[], cid: number) => Promise<string | undefined[] | TagObject[]>;
+  checkContent: (content: string) => void;
+
+  getTopicsByTids: (tids: number[], uid: number | string) => Promise<OptionalTopic[]>;
+  follow: (tid: number, uid: number | string) => Promise<void>;
+  delete: (tid: number) => void;
+
+  reply: (data: TopicData) => Promise<PostObjectPartial>;
+  notifyFollowers: (postData: PostObjectPartial, uid: number | string, obj: {
+    type: string,
+    bodyShort: string,
+    nid: string,
+    mergeId: string,
+  }) => void;
+
+  markAsUnreadForAll: (tid: number) => Promise<void>;
+  markAsRead: (tids: number[], uid: number | string) => Promise<void>;
+  addParentPosts: (postData: PostObjectPartial[]) => Promise<void>;
+  syncBacklinks: (postData: PostObjectPartial) => Promise<void>;
 }

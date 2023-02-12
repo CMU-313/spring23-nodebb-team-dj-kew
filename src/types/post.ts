@@ -49,6 +49,7 @@ export type PostObjectPartial = {
   ip?: number | string;
   cid?: number;
   isMain?: boolean;
+  index?: number;
 }
 
 export type PostField = number | string | boolean | TopicObject | CategoryObject | UserObjectSlim | null;
