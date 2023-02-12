@@ -2,7 +2,6 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
 const meta_1 = __importDefault(require("../meta"));
 const database_1 = __importDefault(require("../database"));
@@ -12,6 +11,19 @@ const topics_1 = __importDefault(require("../topics"));
 const categories_1 = __importDefault(require("../categories"));
 const groups_1 = __importDefault(require("../groups"));
 const utils_1 = __importDefault(require("../utils"));
+async function addReplyTo(postData, timestamp) {
+    if (!postData.toPid) {
+        return;
+    }
+    await Promise.all([
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        database_1.default.sortedSetAdd(`pid:${postData.toPid}:replies`, timestamp, postData.pid),
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        database_1.default.incrObjectField(`post:${postData.toPid}`, 'replies'),
+    ]);
+}
 module.exports = function (Posts) {
     Posts.create = async function (data) {
         // This is an internal method, consider using Topics.reply instead
@@ -27,6 +39,8 @@ module.exports = function (Posts) {
         if (data.toPid && !utils_1.default.isNumber(data.toPid)) {
             throw new Error('[[error:invalid-pid]]');
         }
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         const pid = await database_1.default.incrObjectField('global', 'nextPid');
         let postData = {
             pid: pid,
@@ -39,6 +53,8 @@ module.exports = function (Posts) {
         if (data.toPid) {
             postData.toPid = data.toPid;
         }
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         if (data.ip && meta_1.default.config.trackIpPerPost) {
             postData.ip = data.ip;
         }
@@ -47,17 +63,35 @@ module.exports = function (Posts) {
         }
         let result = await plugins_1.default.hooks.fire('filter:post.create', { post: postData, data: data });
         postData = result.post;
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         await database_1.default.setObject(`post:${postData.pid}`, postData);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         const topicData = await topics_1.default.getTopicFields(tid, ['cid', 'pinned']);
         postData.cid = topicData.cid;
         await Promise.all([
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             database_1.default.sortedSetAdd('posts:pid', timestamp, postData.pid),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             database_1.default.incrObjectField('global', 'postCount'),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             user_1.default.onNewPostMade(postData),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             topics_1.default.onNewPostMade(postData),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             categories_1.default.onNewPostMade(topicData.cid, topicData.pinned, postData),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             groups_1.default.onNewPostMade(postData),
             addReplyTo(postData, timestamp),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             Posts.uploads.sync(postData.pid),
         ]);
         result = await plugins_1.default.hooks.fire('filter:post.get', { post: postData, uid: data.uid });
@@ -65,13 +99,4 @@ module.exports = function (Posts) {
         plugins_1.default.hooks.fire('action:post.save', { post: lodash_1.default.clone(result.post) });
         return result.post;
     };
-    async function addReplyTo(postData, timestamp) {
-        if (!postData.toPid) {
-            return;
-        }
-        await Promise.all([
-            database_1.default.sortedSetAdd(`pid:${postData.toPid}:replies`, timestamp, postData.pid),
-            database_1.default.incrObjectField(`post:${postData.toPid}`, 'replies'),
-        ]);
-    }
 };
