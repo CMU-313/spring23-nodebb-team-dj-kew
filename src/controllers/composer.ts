@@ -125,7 +125,7 @@ export async function post(req: Request<object, object, ComposerData> & { uid: n
         if (result.queued) {
             return res.redirect(`${nconf.get('relative_path') as string || '/'}?noScriptMessage=[[success:post-queued]]`);
         }
-        const uid: number = result.uid ? result.uid : result.topicData.uid;
+        const uid: number | string = result.uid ? result.uid : result.topicData.uid;
 
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
