@@ -11,9 +11,9 @@ import posts from '../posts';
 import privileges from '../privileges';
 import categories from '../categories';
 import translator from '../translator';
-import { TopicData } from '../types';
+import { PostObjectPartial, TopicData, TopicMethods } from '../types';
 
-module.exports = function (Topics) {
+export = function (Topics: TopicMethods) {
     Topics.create = async function (data) {
         // This is an internal method, consider using Topics.post instead
         const timestamp = data.timestamp || Date.now();
@@ -115,7 +115,7 @@ module.exports = function (Topics) {
 
         const tid = await Topics.create(data);
 
-        let postData = data;
+        let postData: PostObjectPartial = data;
         postData.tid = tid;
         postData.ip = data.req ? data.req.ip : null;
         postData.isMain = true;
@@ -148,7 +148,7 @@ module.exports = function (Topics) {
         analytics.increment(['topics', `topics:byCid:${topicData.cid}`]);
         plugins.hooks.fire('action:topic.post', { topic: topicData, post: postData, data: data });
 
-        if (parseInt(uid, 10) && !topicData.scheduled) {
+        if (parseInt(uid as string, 10) && !topicData.scheduled) {
             user.notifications.sendTopicNotificationToFollowers(uid, topicData, postData);
         }
 
@@ -183,7 +183,7 @@ module.exports = function (Topics) {
 
         // For replies to scheduled topics, don't have a timestamp older than topic's itself
         if (topicData.scheduled) {
-            data.timestamp = topicData.lastposttime + 1;
+            data.timestamp = topicData.lastposttime as number + 1;
         }
 
         data.ip = data.req ? data.req.ip : null;
@@ -195,11 +195,11 @@ module.exports = function (Topics) {
             await Topics.follow(postData.tid, uid);
         }
 
-        if (parseInt(uid, 10)) {
+        if (parseInt(uid as string, 10)) {
             user.setUserField(uid, 'lastonline', Date.now());
         }
 
-        if (parseInt(uid, 10) || meta.config.allowGuestReplyNotifications) {
+        if (parseInt(uid as string, 10) || meta.config.allowGuestReplyNotifications) {
             const { displayname } = postData.user;
 
             Topics.notifyFollowers(postData, uid, {
@@ -234,7 +234,7 @@ module.exports = function (Topics) {
 
         postData.user = userInfo[0];
         postData.topic = topicInfo;
-        postData.index = topicInfo.postcount - 1;
+        postData.index = (topicInfo.postcount as unknown) as number - 1;
 
         posts.overrideGuestHandle(postData, data.handle);
 
