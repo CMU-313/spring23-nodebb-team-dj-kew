@@ -44,6 +44,9 @@ export type PostObjectPartial = {
   edited?: boolean | number;
   editedISO?: string;
   isAnon?: boolean | string;
+  toPid?: unknown;
+  ip?: number | string;
+  cid?: number;
 }
 
 export type PostField = number | string | boolean | TopicObject | CategoryObject | UserObjectSlim | null;
