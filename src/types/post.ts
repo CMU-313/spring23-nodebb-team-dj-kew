@@ -22,13 +22,14 @@ export type PostObject = {
   edited?: boolean | number;
   editedISO?: string;
   isAnon?: boolean | string;
+  isMain?: boolean;
 };
 
 export type PostObjectPartial = {
   pid?: number;
   tid?: number;
   content?: string;
-  uid?: number;
+  uid?: number | string;
   timestamp?: number;
   deleted?: boolean | number;
   upvotes?: number;
@@ -44,6 +45,10 @@ export type PostObjectPartial = {
   edited?: boolean | number;
   editedISO?: string;
   isAnon?: boolean | string;
+  toPid?: number | string;
+  ip?: number | string;
+  cid?: number;
+  isMain?: boolean;
 }
 
 export type PostField = number | string | boolean | TopicObject | CategoryObject | UserObjectSlim | null;
@@ -51,6 +56,10 @@ export type PostField = number | string | boolean | TopicObject | CategoryObject
 export type OptionalPost = PostObject | null;
 
 export type OptionalPostList = OptionalPost[] | null;
+
+export interface PostWrapper {
+  post: OptionalPost;
+}
 
 export interface PostsWrapper {
     posts?: OptionalPostList;
@@ -78,5 +87,8 @@ export interface PostsMethods {
     getPostSummaryByPids: (pids: number[], uid: number, options: PostSummaryOptions) => Promise<OptionalPostList>;
     parsePost: (post: OptionalPost) => Promise<OptionalPost>;
     overrideGuestHandle: (post: PostObject, handle: string) => void;
+
+    create: (data: PostObjectPartial) => Promise<PostObject>;
+    uploads: any;
 }
 
