@@ -1,3 +1,5 @@
+// Referenced @ziyanwang1’s TypeScript translation from P1: https://github.com/CMU-313/NodeBB/pull/91
+
 import _ from 'lodash';
 
 import meta from '../meta';
