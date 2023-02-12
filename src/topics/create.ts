@@ -11,14 +11,126 @@ import posts from '../posts';
 import privileges from '../privileges';
 import categories from '../categories';
 import translator from '../translator';
-import { PostObjectPartial, TopicData, TopicMethods } from '../types';
+import { PostObjectPartial, PostWrapper, SettingsObject, TopicData, TopicObject, TopicPostData, TopicMethods, TopicWrapper, UserObjectSlim } from '../types';
+
+function check(item: string, min: string, max: string, minError: string, maxError: string) {
+    // Trim and remove HTML (latter for composers that send in HTML, like redactor)
+    if (typeof item === 'string') {
+        item = utils.stripHTMLTags(item).trim();
+    }
+
+    if (item === null || item === undefined || item.length < parseInt(min, 10)) {
+        throw new Error(`[[error:${minError}, ${min}]]`);
+    } else if (item.length > parseInt(max, 10)) {
+        throw new Error(`[[error:${maxError}, ${max}]]`);
+    }
+}
+
+async function guestHandleValid(data: TopicData) {
+    // The next line calls a function in a module that has not been updated to TS yet
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    if (meta.config.allowGuestHandles && parseInt(data.uid as string, 10) === 0 && data.handle) {
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        if (data.handle.length > meta.config.maximumUsernameLength) {
+            throw new Error('[[error:guest-handle-invalid]]');
+        }
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const exists = await user.existsBySlug(slugify(data.handle));
+        if (exists) {
+            throw new Error('[[error:username-taken]]');
+        }
+    }
+}
+
+async function canReply(data: TopicData, topicData: TopicObject) {
+    if (!topicData) {
+        throw new Error('[[error:no-topic]]');
+    }
+    const { tid, uid } = data;
+    const { cid, deleted, locked, scheduled } = topicData;
+
+    const [canReply, canSchedule, isAdminOrMod]: boolean[] = await Promise.all([
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        privileges.topics.can('topics:reply', tid, uid) as boolean,
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        privileges.topics.can('topics:schedule', tid, uid) as boolean,
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        privileges.categories.isAdminOrMod(cid, uid) as boolean,
+    ]);
+
+    if (locked && !isAdminOrMod) {
+        throw new Error('[[error:topic-locked]]');
+    }
+
+    if (!scheduled && deleted && !isAdminOrMod) {
+        throw new Error('[[error:topic-deleted]]');
+    }
+
+    if (scheduled && !canSchedule) {
+        throw new Error('[[error:no-privileges]]');
+    }
+
+    if (!canReply) {
+        throw new Error('[[error:no-privileges]]');
+    }
+}
 
 export = function (Topics: TopicMethods) {
+    async function onNewPost(postData: PostObjectPartial, data: TopicData) {
+        const { tid } = postData;
+        const { uid } = postData;
+        await Topics.markAsUnreadForAll(tid);
+        await Topics.markAsRead([tid], uid);
+        const [
+            userInfo,
+            topicInfo,
+        ]: (UserObjectSlim | TopicObject)[] = await Promise.all([
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            posts.getUserInfoForPosts([postData.uid], uid) as UserObjectSlim[],
+            Topics.getTopicFields(tid, ['tid', 'uid', 'title', 'slug', 'cid', 'postcount', 'mainPid', 'scheduled']),
+            Topics.addParentPosts([postData]),
+            Topics.syncBacklinks(postData),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            posts.parsePost(postData),
+        ]) as (UserObjectSlim | TopicObject)[];
+
+        postData.user = userInfo[0] as UserObjectSlim;
+        postData.topic = topicInfo as TopicObject;
+        postData.index = (topicInfo.postcount as unknown) as number - 1;
+
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        posts.overrideGuestHandle(postData, data.handle);
+
+        postData.votes = 0;
+        postData.bookmarked = false;
+        postData.display_edit_tools = true;
+        postData.display_delete_tools = true;
+        postData.display_moderator_tools = true;
+        postData.display_move_tools = true;
+        postData.selfPost = false;
+        postData.timestampISO = utils.toISOString(postData.timestamp) as string;
+        postData.topic.title = String(postData.topic.title);
+
+        return postData;
+    }
+
     Topics.create = async function (data) {
         // This is an internal method, consider using Topics.post instead
         const timestamp = data.timestamp || Date.now();
 
-        const tid = await db.incrObjectField('global', 'nextTid');
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const tid: number = await db.incrObjectField('global', 'nextTid') as number;
+
+        const title: string = slugify(data.title) as string;
 
         let topicData: TopicData = {
             tid: tid,
@@ -26,7 +138,7 @@ export = function (Topics: TopicMethods) {
             cid: data.cid,
             mainPid: 0,
             title: data.title,
-            slug: `${tid}/${slugify(data.title) || 'topic'}`,
+            slug: `${tid}/${title || 'topic'}`,
             timestamp: timestamp,
             lastposttime: 0,
             postcount: 0,
@@ -38,8 +150,10 @@ export = function (Topics: TopicMethods) {
             topicData.tags = data.tags.join(',');
         }
 
-        const result = await plugins.hooks.fire('filter:topic.create', { topic: topicData, data: data });
+        const result = await plugins.hooks.fire('filter:topic.create', { topic: topicData, data: data }) as TopicWrapper;
         topicData = result.topic;
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         await db.setObject(`topic:${topicData.tid}`, topicData);
 
         const timestampedSortedSetKeys = [
@@ -54,29 +168,43 @@ export = function (Topics: TopicMethods) {
         }
 
         await Promise.all([
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             db.sortedSetsAdd(timestampedSortedSetKeys, timestamp, topicData.tid),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             db.sortedSetsAdd([
                 'topics:views', 'topics:posts', 'topics:votes',
                 `cid:${topicData.cid}:tids:votes`,
                 `cid:${topicData.cid}:tids:posts`,
                 `cid:${topicData.cid}:tids:views`,
             ], 0, topicData.tid),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             user.addTopicIdToUser(topicData.uid, topicData.tid, timestamp),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             db.incrObjectField(`category:${topicData.cid}`, 'topic_count'),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             db.incrObjectField('global', 'topicCount'),
             Topics.createTags(data.tags, topicData.tid, timestamp),
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             scheduled ? Promise.resolve() : categories.updateRecentTid(topicData.cid, topicData.tid),
         ]);
         if (scheduled) {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             await Topics.scheduled.pin(tid, topicData);
         }
 
-        plugins.hooks.fire('action:topic.save', { topic: _.clone(topicData), data: data });
+        plugins.hooks.fire('action:topic.save', { topic: _.clone(topicData), data: data }) as TopicWrapper;
         return topicData.tid;
     };
 
     Topics.post = async function (data) {
-        data = await plugins.hooks.fire('filter:topic.post', data);
+        data = await plugins.hooks.fire('filter:topic.post', data) as TopicData;
         const { uid } = data;
         const { isAnon } = data;
 
@@ -85,7 +213,9 @@ export = function (Topics: TopicMethods) {
         data.title = String(data.title).trim();
         data.tags = data.tags || [];
         if (data.content) {
-            data.content = utils.rtrim(data.content);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            data.content = utils.rtrim(data.content) as string;
         }
         Topics.checkTitle(data.title);
         await Topics.validateTags(data.tags, data.cid, uid);
@@ -94,10 +224,16 @@ export = function (Topics: TopicMethods) {
             Topics.checkContent(data.content);
         }
 
-        const [categoryExists, canCreate, canTag] = await Promise.all([
-            categories.exists(data.cid),
-            privileges.categories.can('topics:create', data.cid, uid),
-            privileges.categories.can('topics:tag', data.cid, uid),
+        const [categoryExists, canCreate, canTag]: boolean[] = await Promise.all([
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            categories.exists(data.cid) as boolean,
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            privileges.categories.can('topics:create', data.cid, uid) as boolean,
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            privileges.categories.can('topics:tag', data.cid, uid) as boolean,
         ]);
 
         if (!categoryExists) {
@@ -110,6 +246,8 @@ export = function (Topics: TopicMethods) {
 
         await guestHandleValid(data);
         if (!data.fromQueue) {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             await user.isReadyToPost(uid, data.cid);
         }
 
@@ -120,18 +258,24 @@ export = function (Topics: TopicMethods) {
         postData.ip = data.req ? data.req.ip : null;
         postData.isMain = true;
         postData.isAnon = isAnon;
-        postData = await posts.create(postData);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        postData = await posts.create(postData) as PostObjectPartial;
         postData = await onNewPost(postData, data);
 
-        const [settings, topics] = await Promise.all([
-            user.getSettings(uid),
-            Topics.getTopicsByTids([postData.tid], uid),
-        ]);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const settings: SettingsObject = await user.getSettings(uid) as SettingsObject;
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const topics: TopicObject[] = await Topics.getTopicsByTids([postData.tid], uid);
 
         if (!Array.isArray(topics) || !topics.length) {
             throw new Error('[[error:no-topic]]');
         }
 
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         if (uid > 0 && settings.followTopicsOnCreate) {
             await Topics.follow(postData.tid, uid);
         }
@@ -146,10 +290,12 @@ export = function (Topics: TopicMethods) {
         }
 
         analytics.increment(['topics', `topics:byCid:${topicData.cid}`]);
-        plugins.hooks.fire('action:topic.post', { topic: topicData, post: postData, data: data });
+        plugins.hooks.fire('action:topic.post', { topic: topicData, post: postData, data: data }) as TopicPostData;
 
         if (parseInt(uid as string, 10) && !topicData.scheduled) {
-            user.notifications.sendTopicNotificationToFollowers(uid, topicData, postData);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            await user.notifications.sendTopicNotificationToFollowers(uid, topicData, postData);
         }
 
         return {
@@ -159,7 +305,7 @@ export = function (Topics: TopicMethods) {
     };
 
     Topics.reply = async function (data) {
-        data = await plugins.hooks.fire('filter:topic.reply', data);
+        data = await plugins.hooks.fire('filter:topic.reply', data) as TopicData;
         const { tid } = data;
         const { uid } = data;
         const { isAnon } = data;
@@ -174,9 +320,11 @@ export = function (Topics: TopicMethods) {
 
         await guestHandleValid(data);
         if (data.content) {
-            data.content = utils.rtrim(data.content);
+            data.content = utils.rtrim(data.content) as string;
         }
         if (!data.fromQueue) {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             await user.isReadyToPost(uid, data.cid);
             Topics.checkContent(data.content);
         }
@@ -187,18 +335,28 @@ export = function (Topics: TopicMethods) {
         }
 
         data.ip = data.req ? data.req.ip : null;
-        let postData = await posts.create(data);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        let postData = await posts.create(data) as PostObjectPartial;
         postData = await onNewPost(postData, data);
 
-        const settings = await user.getSettings(uid);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const settings = await user.getSettings(uid) as SettingsObject;
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         if (uid > 0 && settings.followTopicsOnReply) {
             await Topics.follow(postData.tid, uid);
         }
 
         if (parseInt(uid as string, 10)) {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             user.setUserField(uid, 'lastonline', Date.now());
         }
 
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         if (parseInt(uid as string, 10) || meta.config.allowGuestReplyNotifications) {
             const { displayname } = postData.user;
 
@@ -211,106 +369,20 @@ export = function (Topics: TopicMethods) {
         }
 
         analytics.increment(['posts', `posts:byCid:${data.cid}`]);
-        plugins.hooks.fire('action:topic.reply', { post: _.clone(postData), data: data });
+        plugins.hooks.fire('action:topic.reply', { post: _.clone(postData), data: data }) as PostWrapper;
 
         return postData;
     };
 
-    async function onNewPost(postData, data) {
-        const { tid } = postData;
-        const { uid } = postData;
-        await Topics.markAsUnreadForAll(tid);
-        await Topics.markAsRead([tid], uid);
-        const [
-            userInfo,
-            topicInfo,
-        ] = await Promise.all([
-            posts.getUserInfoForPosts([postData.uid], uid),
-            Topics.getTopicFields(tid, ['tid', 'uid', 'title', 'slug', 'cid', 'postcount', 'mainPid', 'scheduled']),
-            Topics.addParentPosts([postData]),
-            Topics.syncBacklinks(postData),
-            posts.parsePost(postData),
-        ]);
-
-        postData.user = userInfo[0];
-        postData.topic = topicInfo;
-        postData.index = (topicInfo.postcount as unknown) as number - 1;
-
-        posts.overrideGuestHandle(postData, data.handle);
-
-        postData.votes = 0;
-        postData.bookmarked = false;
-        postData.display_edit_tools = true;
-        postData.display_delete_tools = true;
-        postData.display_moderator_tools = true;
-        postData.display_move_tools = true;
-        postData.selfPost = false;
-        postData.timestampISO = utils.toISOString(postData.timestamp);
-        postData.topic.title = String(postData.topic.title);
-
-        return postData;
-    }
-
     Topics.checkTitle = function (title) {
-        check(title, meta.config.minimumTitleLength, meta.config.maximumTitleLength, 'title-too-short', 'title-too-long');
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        check(title, meta.config.minimumTitleLength as string, meta.config.maximumTitleLength as string, 'title-too-short', 'title-too-long');
     };
 
     Topics.checkContent = function (content) {
-        check(content, meta.config.minimumPostLength, meta.config.maximumPostLength, 'content-too-short', 'content-too-long');
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        check(content, meta.config.minimumPostLength as string, meta.config.maximumPostLength as string, 'content-too-short', 'content-too-long');
     };
-
-    function check(item, min, max, minError, maxError) {
-        // Trim and remove HTML (latter for composers that send in HTML, like redactor)
-        if (typeof item === 'string') {
-            item = utils.stripHTMLTags(item).trim();
-        }
-
-        if (item === null || item === undefined || item.length < parseInt(min, 10)) {
-            throw new Error(`[[error:${minError}, ${min}]]`);
-        } else if (item.length > parseInt(max, 10)) {
-            throw new Error(`[[error:${maxError}, ${max}]]`);
-        }
-    }
-
-    async function guestHandleValid(data) {
-        if (meta.config.allowGuestHandles && parseInt(data.uid, 10) === 0 && data.handle) {
-            if (data.handle.length > meta.config.maximumUsernameLength) {
-                throw new Error('[[error:guest-handle-invalid]]');
-            }
-            const exists = await user.existsBySlug(slugify(data.handle));
-            if (exists) {
-                throw new Error('[[error:username-taken]]');
-            }
-        }
-    }
-
-    async function canReply(data, topicData) {
-        if (!topicData) {
-            throw new Error('[[error:no-topic]]');
-        }
-        const { tid, uid } = data;
-        const { cid, deleted, locked, scheduled } = topicData;
-
-        const [canReply, canSchedule, isAdminOrMod] = await Promise.all([
-            privileges.topics.can('topics:reply', tid, uid),
-            privileges.topics.can('topics:schedule', tid, uid),
-            privileges.categories.isAdminOrMod(cid, uid),
-        ]);
-
-        if (locked && !isAdminOrMod) {
-            throw new Error('[[error:topic-locked]]');
-        }
-
-        if (!scheduled && deleted && !isAdminOrMod) {
-            throw new Error('[[error:topic-deleted]]');
-        }
-
-        if (scheduled && !canSchedule) {
-            throw new Error('[[error:no-privileges]]');
-        }
-
-        if (!canReply) {
-            throw new Error('[[error:no-privileges]]');
-        }
-    }
 };
