@@ -1,4 +1,5 @@
 "use strict";
+// Referenced @ziyanwang1’s TypeScript translation from P1: https://github.com/CMU-313/NodeBB/pull/91
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
