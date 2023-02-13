@@ -48,8 +48,6 @@ module.exports = function (Posts) {
     };
     Posts.getPostData = async function (pid) {
         const posts = await Posts.getPostsFields([pid], []);
-        // ..post data:  [ null ]
-        // result:  { pids: [ 9999 ], posts: [ null ], fields: [] }
         return posts && posts.length ? posts[0] : null;
     };
     Posts.getPostsData = async function (pids) {

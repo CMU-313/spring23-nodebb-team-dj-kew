@@ -10,6 +10,8 @@
         <div class="col-md-6 col-sm-9 col-xs-10 content">
             <div class="avatar pull-left">
                 <!-- IF showSelect -->
+                <!-- IF posts.isAnon -->
+                <!-- ELSE -->
                 <div class="select" component="topic/select">
                     {{{ if ./thumbs.length }}}
                     <img src="{./thumbs.0.url}" class="user-img not-responsive" />
@@ -18,9 +20,12 @@
                     {{{ end }}}
                     <i class="fa fa-check"></i>
                 </div>
+                <!-- ENDIF -->
                 <!-- ENDIF showSelect -->
 
                 <!-- IF !showSelect -->
+                <!-- IF posts.isAnon -->
+                <!-- ELSE -->
                 <a href="<!-- IF topics.user.userslug -->{config.relative_path}/user/{topics.user.userslug}<!-- ELSE -->#<!-- ENDIF topics.user.userslug -->" class="pull-left">
                     {{{ if ./thumbs.length }}}
                     <img src="{./thumbs.0.url}" class="user-img not-responsive" />
@@ -28,8 +33,10 @@
                     {buildAvatar(../user, "46", true, "not-responsive")}
                     {{{ end }}}
                 </a>
+                <!-- ENDIF -->
                 <!-- ENDIF !showSelect -->
             </div>
+            
 
             <h2 component="topic/header" class="title">
                 <i component="topic/scheduled" class="fa fa-clock-o <!-- IF !topics.scheduled -->hide<!-- ENDIF !topics.scheduled -->" title="[[topic:scheduled]]"></i>
@@ -108,7 +115,10 @@
                 <!-- ELSE -->
                 <!-- IF topics.teaser.pid -->
                 <p>
+                    <!-- IF posts.isAnon -->
+                    <!-- ELSE -->
                     <a href="{config.relative_path}/user/{topics.teaser.user.userslug}">{buildAvatar(topics.teaser.user, "24", true, "not-responsive")}</a>
+                    <!-- ENDIF -->
                     <a class="permalink" href="{config.relative_path}/topic/{topics.slug}/{topics.teaser.index}">
                         <span class="timeago" title="{topics.teaser.timestampISO}"></span>
                     </a>
