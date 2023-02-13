@@ -8,6 +8,7 @@
         <a id="{../index}" data-index="{../index}" component="topic/anchor"></a>
 
         <div class="col-md-6 col-sm-9 col-xs-10 content">
+            
             <div class="avatar pull-left">
                 <!-- IF showSelect -->
                 <!-- IF posts.isAnon -->
