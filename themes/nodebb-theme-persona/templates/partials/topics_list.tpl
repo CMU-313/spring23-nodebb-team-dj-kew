@@ -8,6 +8,8 @@
         <a id="{../index}" data-index="{../index}" component="topic/anchor"></a>
 
         <div class="col-md-6 col-sm-9 col-xs-10 content">
+            <!-- IF posts.isAnon -->
+            <!-- ELSE -->
             <div class="avatar pull-left">
                 <!-- IF showSelect -->
                 <div class="select" component="topic/select">
@@ -30,6 +32,8 @@
                 </a>
                 <!-- ENDIF !showSelect -->
             </div>
+            <!-- ENDIF -->
+            
 
             <h2 component="topic/header" class="title">
                 <i component="topic/scheduled" class="fa fa-clock-o <!-- IF !topics.scheduled -->hide<!-- ENDIF !topics.scheduled -->" title="[[topic:scheduled]]"></i>
@@ -108,7 +112,10 @@
                 <!-- ELSE -->
                 <!-- IF topics.teaser.pid -->
                 <p>
+                    <!-- IF posts.isAnon -->
+                    <!-- ELSE -->
                     <a href="{config.relative_path}/user/{topics.teaser.user.userslug}">{buildAvatar(topics.teaser.user, "24", true, "not-responsive")}</a>
+                    <!-- ENDIF -->
                     <a class="permalink" href="{config.relative_path}/topic/{topics.slug}/{topics.teaser.index}">
                         <span class="timeago" title="{topics.teaser.timestampISO}"></span>
                     </a>
