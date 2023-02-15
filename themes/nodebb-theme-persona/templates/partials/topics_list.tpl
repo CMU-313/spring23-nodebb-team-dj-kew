@@ -8,7 +8,9 @@
         <a id="{../index}" data-index="{../index}" component="topic/anchor"></a>
 
         <div class="col-md-6 col-sm-9 col-xs-10 content">
+            
             <div class="avatar pull-left">
+
                 <!-- IF showSelect -->
                 <!-- IF posts.isAnon -->
                 <!-- ELSE -->
@@ -66,10 +68,15 @@
                     <small>&bull;</small>
                 </span>
                 {{{ end }}}
-
+                 
+                
                 <small class="hidden-xs">
                     <span class="timeago" title="{topics.timestampISO}"></span> &bull; 
+
                     {{{ if topics.isAnon }}}
+                     <strong>
+                        <span itemprop="author">Anonymous</span>
+                    </strong>
                     {{{ else }}}
                     <a href="<!-- IF topics.user.userslug -->{config.relative_path}/user/{topics.user.userslug}<!-- ELSE -->#<!-- ENDIF topics.user.userslug -->">{topics.user.displayname}</a>
                     {{{ end }}}
