@@ -68,7 +68,8 @@
                     <small>&bull;</small>
                 </span>
                 {{{ end }}}
-
+                 
+                
                 <small class="hidden-xs">
                     <span class="timeago" title="{topics.timestampISO}"></span> &bull; 
 
