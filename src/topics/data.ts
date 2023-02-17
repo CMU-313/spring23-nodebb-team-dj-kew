@@ -65,6 +65,10 @@ function modifyTopic(topic: OptionalTopic, fields: string[]) {
         topic.isAnon = topic.isAnon === 'true';
     }
 
+    if (topic.hasOwnProperty('isPrivate')) {
+        topic.isPrivate = topic.isPrivate === 'true';
+    }
+
     if (fields.includes('teaserPid') || !fields.length) {
         topic.teaserPid = topic.teaserPid || null;
     }
