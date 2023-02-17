@@ -144,6 +144,7 @@ export = function (Topics: TopicMethods) {
             postcount: 0,
             viewcount: 0,
             isAnon: data.isAnon,
+            isPrivate: data.isPrivate,
         };
 
         if (Array.isArray(data.tags) && data.tags.length) {
@@ -207,8 +208,10 @@ export = function (Topics: TopicMethods) {
         data = await plugins.hooks.fire('filter:topic.post', data) as TopicData;
         const { uid } = data;
         const { isAnon } = data;
+        const { isPrivate } = data;
 
         data.isAnon = isAnon;
+        data.isPrivate = isPrivate;
 
         data.title = String(data.title).trim();
         data.tags = data.tags || [];
@@ -309,8 +312,10 @@ export = function (Topics: TopicMethods) {
         const { tid } = data;
         const { uid } = data;
         const { isAnon } = data;
+        const { isPrivate } = data;
 
         data.isAnon = isAnon;
+        data.isPrivate = isPrivate;
 
         const topicData = await Topics.getTopicData(tid);
 

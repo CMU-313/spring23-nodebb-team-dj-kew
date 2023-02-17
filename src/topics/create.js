@@ -126,6 +126,7 @@ module.exports = function (Topics) {
             postcount: 0,
             viewcount: 0,
             isAnon: data.isAnon,
+            isPrivate: data.isPrivate,
         };
         if (Array.isArray(data.tags) && data.tags.length) {
             topicData.tags = data.tags.join(',');
@@ -182,7 +183,9 @@ module.exports = function (Topics) {
         data = await plugins_1.default.hooks.fire('filter:topic.post', data);
         const { uid } = data;
         const { isAnon } = data;
+        const { isPrivate } = data;
         data.isAnon = isAnon;
+        data.isPrivate = isPrivate;
         data.title = String(data.title).trim();
         data.tags = data.tags || [];
         if (data.content) {
@@ -268,7 +271,9 @@ module.exports = function (Topics) {
         const { tid } = data;
         const { uid } = data;
         const { isAnon } = data;
+        const { isPrivate } = data;
         data.isAnon = isAnon;
+        data.isPrivate = isPrivate;
         const topicData = await Topics.getTopicData(tid);
         await canReply(data, topicData);
         data.cid = topicData.cid;
