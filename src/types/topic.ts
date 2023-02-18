@@ -16,6 +16,7 @@ export type TopicObject = {
   unreplied: boolean;
   icons: string[];
   isAnon?: boolean | string;
+  isPrivate?: boolean | string;
   tid?: number;
   thumb?: string;
   pinExpiry?: number;
@@ -63,6 +64,7 @@ export type TopicData = {
   postcount?: number | string;
   viewcount?: number | string;
   isAnon?: boolean | string;
+  isPrivate?: boolean | string;
   tags?: string | undefined[] | TagObject[];
   content?: string;
   fromQueue?: boolean;
@@ -110,6 +112,7 @@ export type TopicObjectOptionalProperties = {
   timestampISO: string;
   scheduled: boolean;
   isAnon: boolean;
+  isPrivate: boolean;
 };
 
 interface Teaser {
