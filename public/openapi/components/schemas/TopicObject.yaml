@@ -166,6 +166,9 @@ TopicObject:
         isAnon:
           nullable: true
           type: boolean
+        isPrivate:
+          nullable: true
+          type: boolean
         icons:
           type: array
           items:
@@ -238,6 +241,9 @@ TopicObjectSlim:
         lastposttime:
           type: number
         isAnon:
+          type: boolean
+          nullable: true
+        isPrivate:
           type: boolean
           nullable: true
         lastposttimeISO:
