@@ -57,6 +57,8 @@ privsTopics.get = async function (tid, uid) {
         disabled: disabled,
         tid: tid,
         uid: uid,
+        
+        visible: isAdminOrMod || isOwner || !topicData.isPrivate,
     });
 };
 
