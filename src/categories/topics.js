@@ -171,7 +171,7 @@ module.exports = function (Categories) {
                 topic.tags = [];
             }
 
-            topic.visible = privileges.isAdminOrMod || topic.isOwner || !topic.isPrivate
+            topic.visible = privileges.isAdminOrMod || topic.isOwner || !topic.isPrivate;
         });
     };
 
