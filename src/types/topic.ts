@@ -29,11 +29,11 @@ export type TopicObject = {
   title: string;
   slug: string;
   mainPid: number;
-  postcount: string;
+  postcount: string | number;
   viewcount: string;
   postercount: string;
   deleted: string;
-  deleterUid: string;
+  deleterUid: string | number;
   titleRaw: string;
   locked: string;
   pinned: number;
