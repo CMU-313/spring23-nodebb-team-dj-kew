@@ -279,7 +279,7 @@ export = function (Topics: TopicMethods) {
 
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        if (uid > 0 && settings.followTopicsOnCreate) {
+        if (uid as number > 0 && settings.followTopicsOnCreate) {
             await Topics.follow(postData.tid, uid);
         }
         const topicData = topics[0];
@@ -350,7 +350,7 @@ export = function (Topics: TopicMethods) {
         const settings = await user.getSettings(uid) as SettingsObject;
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        if (uid > 0 && settings.followTopicsOnReply) {
+        if (uid as number > 0 && settings.followTopicsOnReply) {
             await Topics.follow(postData.tid, uid);
         }
 
