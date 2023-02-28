@@ -144,6 +144,7 @@ export = function (Topics: TopicMethods) {
             postcount: 0,
             viewcount: 0,
             isAnon: data.isAnon,
+            isPrivate: data.isPrivate,
         };
 
         if (Array.isArray(data.tags) && data.tags.length) {
@@ -207,8 +208,10 @@ export = function (Topics: TopicMethods) {
         data = await plugins.hooks.fire('filter:topic.post', data) as TopicData;
         const { uid } = data;
         const { isAnon } = data;
+        const { isPrivate } = data;
 
         data.isAnon = isAnon;
+        data.isPrivate = isPrivate;
 
         data.title = String(data.title).trim();
         data.tags = data.tags || [];
@@ -276,7 +279,7 @@ export = function (Topics: TopicMethods) {
 
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        if (uid > 0 && settings.followTopicsOnCreate) {
+        if (uid as number > 0 && settings.followTopicsOnCreate) {
             await Topics.follow(postData.tid, uid);
         }
         const topicData = topics[0];
@@ -309,8 +312,10 @@ export = function (Topics: TopicMethods) {
         const { tid } = data;
         const { uid } = data;
         const { isAnon } = data;
+        const { isPrivate } = data;
 
         data.isAnon = isAnon;
+        data.isPrivate = isPrivate;
 
         const topicData = await Topics.getTopicData(tid);
 
@@ -345,7 +350,7 @@ export = function (Topics: TopicMethods) {
         const settings = await user.getSettings(uid) as SettingsObject;
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        if (uid > 0 && settings.followTopicsOnReply) {
+        if (uid as number > 0 && settings.followTopicsOnReply) {
             await Topics.follow(postData.tid, uid);
         }
 

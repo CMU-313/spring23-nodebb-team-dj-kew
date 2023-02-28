@@ -4,7 +4,7 @@ import { UserObjectSlim } from './user';
 
 export type PostObject = {
   pid: number;
-  tid: number;
+  tid: number | string;
   content: string;
   uid: number;
   timestamp: number;
@@ -27,7 +27,7 @@ export type PostObject = {
 
 export type PostObjectPartial = {
   pid?: number;
-  tid?: number;
+  tid?: number | string;
   content?: string;
   uid?: number | string;
   timestamp?: number;
@@ -94,7 +94,6 @@ export interface PostsMethods {
     getPostSummaryByPids: (pids: number[], uid: number, options: PostSummaryOptions) => Promise<OptionalPostList>;
     parsePost: (post: OptionalPost) => Promise<OptionalPost>;
     overrideGuestHandle: (post: PostObject, handle: string) => void;
-
     create: (data: PostObjectPartial) => Promise<PostObject | PostObjectPartial>;
     uploads: any;
 }
