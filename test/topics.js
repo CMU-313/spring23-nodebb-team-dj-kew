@@ -2658,6 +2658,8 @@ describe('Topic\'s', () => {
                 title: 'Scheduled Test Topic Title',
                 content: 'The content of scheduled test topic',
                 timestamp: new Date(Date.now() + 86400000).getTime(),
+                isPrivate: true,
+                isAnon: true,
             };
         });
 
@@ -2678,6 +2680,20 @@ describe('Topic\'s', () => {
                 `cid:${categoryObj.cid}:tids:posts`,
             ], topicData.tid);
             assert.deepStrictEqual(isMember, [false, false, false]);
+        });
+
+        it('should be private', async () => {
+            topicData = (await topics.post(topic)).topicData;
+            topicData = await topics.getTopicData(topicData.tid);
+
+            assert(topicData.isPrivate);
+        });
+
+        it('should be anonymous', async () => {
+            topicData = (await topics.post(topic)).topicData;
+            topicData = await topics.getTopicData(topicData.tid);
+
+            assert(topicData.isAnon);
         });
 
         it('should update poster\'s lastposttime with "action time"', async () => {
