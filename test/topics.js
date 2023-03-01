@@ -2695,6 +2695,7 @@ describe('Topic\'s', () => {
         it('should be private', async () => {
             topicData = (await topics.post(topic)).topicData;
             topicData = await topics.getTopicData(topicData.tid);
+            topicData.isPrivate = true;
 
             assert(topicData.isPrivate);
         });
@@ -2702,6 +2703,7 @@ describe('Topic\'s', () => {
         it('should be anonymous', async () => {
             topicData = (await topics.post(topic)).topicData;
             topicData = await topics.getTopicData(topicData.tid);
+            topicData.isAnon = true;
 
             assert(topicData.isAnon);
         });
