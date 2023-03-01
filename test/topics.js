@@ -546,6 +546,18 @@ describe('Topic\'s', () => {
                 assert.strictEqual(postsData[0].content, 'main post');
             });
 
+            it('should not be private', async () => {
+                const topicData = await topics.getTopicData(tid);
+    
+                assert(!topicData.isPrivate);
+            });
+
+            it('should not be anonymous', async () => {
+                const topicData = await topics.getTopicData(tid);
+    
+                assert(!topicData.isAnon);
+            });
+
             it('should only return first reply', async () => {
                 const topicData = await topics.getTopicData(tid);
                 const postsData = await topics.getTopicPosts(topicData, `tid:${tid}:posts`, 1, 1, topic.userId, false);
