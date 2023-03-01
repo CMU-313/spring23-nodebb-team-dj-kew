@@ -1,7 +1,7 @@
 <ul component="category" class="topic-list" itemscope itemtype="http://www.schema.org/ItemList" data-nextstart="{nextStart}" data-set="{set}">
     {{{each topics}}}
 
-        {{{ if ../visible }}}
+    {{{ if ../visible }}}
         <li component="category/topic" class="row clearfix category-item {function.generateTopicClass}" <!-- IMPORT partials/data/category.tpl -->>
             <link itemprop="url" content="{config.relative_path}/topic/{../slug}" />
             <meta itemprop="name" content="{function.stripTags, ../title}" />
@@ -14,8 +14,8 @@
                 <div class="avatar pull-left">
 
                     <!-- IF showSelect -->
-                    {{{ if topics.isAnon }}}
-                    {{{ else }}}
+                    <!-- IF posts.isAnon -->
+                    <!-- ELSE -->
                     <div class="select" component="topic/select">
                         {{{ if ./thumbs.length }}}
                         <img src="{./thumbs.0.url}" class="user-img not-responsive" />
@@ -24,12 +24,12 @@
                         {{{ end }}}
                         <i class="fa fa-check"></i>
                     </div>
-                    {{{end}}}
+                    <!-- ENDIF -->
                     <!-- ENDIF showSelect -->
 
                     <!-- IF !showSelect -->
-                    {{{ if topics.isAnon }}}
-                    {{{ else }}}
+                    <!-- IF posts.isAnon -->
+                    <!-- ELSE -->
                     <a href="<!-- IF topics.user.userslug -->{config.relative_path}/user/{topics.user.userslug}<!-- ELSE -->#<!-- ENDIF topics.user.userslug -->" class="pull-left">
                         {{{ if ./thumbs.length }}}
                         <img src="{./thumbs.0.url}" class="user-img not-responsive" />
@@ -37,7 +37,7 @@
                         {buildAvatar(../user, "46", true, "not-responsive")}
                         {{{ end }}}
                     </a>
-                    {{{ end }}}
+                    <!-- ENDIF -->
                     <!-- ENDIF !showSelect -->
                 </div>
                 
@@ -141,5 +141,4 @@
             </div>
         </li>
         {{{end}}}
-    {{{end}}}
 </ul>
