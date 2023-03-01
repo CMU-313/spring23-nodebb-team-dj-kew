@@ -548,13 +548,11 @@ describe('Topic\'s', () => {
 
             it('should not be private', async () => {
                 const topicData = await topics.getTopicData(tid);
-    
                 assert(!topicData.isPrivate);
             });
 
             it('should not be anonymous', async () => {
                 const topicData = await topics.getTopicData(tid);
-    
                 assert(!topicData.isAnon);
             });
 
