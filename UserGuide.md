@@ -3,6 +3,7 @@
 ## Automated Testing
 
 We added additional automated tests as detailed in this [PR #46](https://github.com/CMU-313/spring23-nodebb-team-dj-kew/pull/46). The new tests cover both the anonymous posting and private posting features and are written under `test/topic.js`
+We believe our tests sufficiently cover the changes we made because we covered all the cases where the poster can choose to post anonymously, privately, or regularly. Our tests check to ensure when topics/posts objects are created either anonymously or privately, that their isAnon or isPrivate field is set to true accordingly. We also performed manual testing, with screenshots below.
 
 After setting up the NodeBB project.
 Go to the root directory of the project, and run:
