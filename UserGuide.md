@@ -28,4 +28,22 @@ As a student, I want to be able to make posts anonymously, so that I don’t fee
 ### Feature Description: 
 As a student, I want to be able to post private posts to only the instructors so that I can have some privacy and not commit an AIV.
 
+
 ### Steps to use this feature
+1. Create 3 users. One named Student 1 (Student Account), one named Student 2 (Student Account), and another named Instructor (Instructor Account)
+2. Give the instructor account administrator privilege by adding it into that user group.
+3. Log in as Student 2, and make a new topic under some category. In this example, we use Comments & Feedback. You should see the "Submit as Private" button on the top-right
+<img width="1298" alt="Screenshot 2023-03-02 at 12 43 28 AM" src="https://user-images.githubusercontent.com/39445499/222341432-a6e8bb8b-b09f-4eee-8f3a-4e8842b1e92c.png">
+
+3. After filling out the title and descriptions, hit "Submit as Private"
+4. Back in the list of topics under "Comments & Feedback", you should be able to see the private post that you just made: 
+<img width="1186" alt="Screenshot 2023-03-02 at 12 46 50 AM" src="https://user-images.githubusercontent.com/39445499/222341990-26807754-7fb8-461f-89ce-23791bf7bb14.png">
+
+
+5. Now, logout and then login as Student 1
+6. Navigate to the list of topics under "Comments & Feedback". You shouldn't be able to see the post that Student 2 made: 
+<img width="1202" alt="Screenshot 2023-03-02 at 12 49 05 AM" src="https://user-images.githubusercontent.com/39445499/222342329-5aa89a08-dccc-4688-b1e5-0e5990d7a9d2.png">
+
+7. Now, logout again and then login as Instructor
+8. Navigate to the list of topics under "Comments & Feedback". This time you **should** be able to see the post that Student 2 made since you're the instructor (administrator privilege): 
+<img width="1218" alt="Screenshot 2023-03-02 at 1 02 24 AM" src="https://user-images.githubusercontent.com/39445499/222344384-69908c19-30b5-48ef-81cc-4c86e70d2c7c.png">
