@@ -2680,6 +2680,8 @@ describe('Topic\'s', () => {
             assert(topicData.pinned);
             assert(topicData.deleted);
             assert(topicData.scheduled);
+            assert(topicData.isPrivate);
+            assert(topicData.isAnon);
             assert(topicData.timestamp > Date.now());
             const score = await db.sortedSetScore('topics:scheduled', topicData.tid);
             assert(score);
@@ -2695,7 +2697,6 @@ describe('Topic\'s', () => {
         it('should be private', async () => {
             topicData = (await topics.post(topic)).topicData;
             topicData = await topics.getTopicData(topicData.tid);
-            topicData.isPrivate = true;
 
             assert(topicData.isPrivate);
         });
@@ -2703,7 +2704,6 @@ describe('Topic\'s', () => {
         it('should be anonymous', async () => {
             topicData = (await topics.post(topic)).topicData;
             topicData = await topics.getTopicData(topicData.tid);
-            topicData.isAnon = true;
 
             assert(topicData.isAnon);
         });
