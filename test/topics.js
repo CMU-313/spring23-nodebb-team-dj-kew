@@ -546,6 +546,16 @@ describe('Topic\'s', () => {
                 assert.strictEqual(postsData[0].content, 'main post');
             });
 
+            it('should not be private', async () => {
+                const topicData = await topics.getTopicData(tid);
+                assert(!topicData.isPrivate);
+            });
+
+            it('should not be anonymous', async () => {
+                const topicData = await topics.getTopicData(tid);
+                assert(!topicData.isAnon);
+            });
+
             it('should only return first reply', async () => {
                 const topicData = await topics.getTopicData(tid);
                 const postsData = await topics.getTopicPosts(topicData, `tid:${tid}:posts`, 1, 1, topic.userId, false);
@@ -2658,6 +2668,8 @@ describe('Topic\'s', () => {
                 title: 'Scheduled Test Topic Title',
                 content: 'The content of scheduled test topic',
                 timestamp: new Date(Date.now() + 86400000).getTime(),
+                isPrivate: true,
+                isAnon: true,
             };
         });
 
@@ -2668,6 +2680,8 @@ describe('Topic\'s', () => {
             assert(topicData.pinned);
             assert(topicData.deleted);
             assert(topicData.scheduled);
+            assert(topicData.isPrivate);
+            assert(topicData.isAnon);
             assert(topicData.timestamp > Date.now());
             const score = await db.sortedSetScore('topics:scheduled', topicData.tid);
             assert(score);
@@ -2678,6 +2692,20 @@ describe('Topic\'s', () => {
                 `cid:${categoryObj.cid}:tids:posts`,
             ], topicData.tid);
             assert.deepStrictEqual(isMember, [false, false, false]);
+        });
+
+        it('should be private', async () => {
+            topicData = (await topics.post(topic)).topicData;
+            topicData = await topics.getTopicData(topicData.tid);
+
+            assert(topicData.isPrivate);
+        });
+
+        it('should be anonymous', async () => {
+            topicData = (await topics.post(topic)).topicData;
+            topicData = await topics.getTopicData(topicData.tid);
+
+            assert(topicData.isAnon);
         });
 
         it('should update poster\'s lastposttime with "action time"', async () => {
