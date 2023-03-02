@@ -1,6 +1,9 @@
 # User Guide
 
 ## Automated Testing
+
+We added additional automated tests as detailed in this [PR #46](https://github.com/CMU-313/spring23-nodebb-team-dj-kew/pull/46). The new tests cover both the anonymous posting and private posting features and are written under `test/topic.js`
+
 After setting up the NodeBB project.
 Go to the root directory of the project, and run:
 ```
