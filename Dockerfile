@@ -1,25 +1,36 @@
-FROM node:lts
+FROM debian:bullseye as builder
 
-RUN mkdir -p /usr/src/app && \
-    chown -R node:node /usr/src/app
-WORKDIR /usr/src/app
+ARG NODE_VERSION=16.15.0
 
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
+RUN apt-get update; apt install -y curl python-is-python3 pkg-config build-essential
+RUN curl https://get.volta.sh | bash
+ENV VOLTA_HOME /root/.volta
+ENV PATH /root/.volta/bin:$PATH
+RUN volta install node@${NODE_VERSION}
 
-COPY --chown=node:node install/package.json /usr/src/app/package.json
+#######################################################################
 
-USER node
+RUN mkdir /app
+WORKDIR /app
 
-RUN npm install --only=prod && \
-    npm cache clean --force
+# NPM will not install any package listed in "devDependencies" when NODE_ENV is set to "production",
+# to install all modules: "npm install --production=false".
+# Ref: https://docs.npmjs.com/cli/v9/commands/npm-install#description
 
-COPY --chown=node:node . /usr/src/app
+ENV NODE_ENV production
 
-ENV NODE_ENV=production \
-    daemon=false \
-    silent=false
+COPY . .
 
-EXPOSE 4567
+RUN npm install
+FROM debian:bullseye
 
-CMD test -n "${SETUP}" && ./nodebb setup || node ./nodebb build; node ./nodebb start
+LABEL fly_launch_runtime="nodejs"
+
+COPY --from=builder /root/.volta /root/.volta
+COPY --from=builder /app /app
+
+WORKDIR /app
+ENV NODE_ENV production
+ENV PATH /root/.volta/bin:$PATH
+
+CMD [ "npm", "run", "start" ]
