@@ -180,9 +180,6 @@ jobs:
       - name: Extract coverage info
         run: npm run coverage
 
-      - name: Extract CodeQL info
-        run: npm run codeql
-
       - name: Test coverage
         uses: coverallsapp/github-action@1.1.3
         if: matrix.coverage
