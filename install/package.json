@@ -17,6 +17,7 @@
         "coveralls": "nyc report --reporter=text-lcov | coveralls && rm -r coverage",
         "postinstall": "patch-package",
         "build": "babel src/ -d lib/",
+        "prepublish": "npm run build",
         "flow": "flow"
     },
     "nyc": {
