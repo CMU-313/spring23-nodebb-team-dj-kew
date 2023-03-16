@@ -82,3 +82,8 @@ theme/*.sublime-workspace
 theme/.idea
 theme/.vscode
 theme/node_modules/
+
+
+# CODEQL 
+codeql-db
+codeql.txt

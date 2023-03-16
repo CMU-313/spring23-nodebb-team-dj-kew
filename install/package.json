@@ -15,7 +15,7 @@
         "test": "npx tsc && nyc --reporter=html --reporter=text-summary mocha",
         "coverage": "nyc report --reporter=text-lcov > ./coverage/lcov.info",
         "coveralls": "nyc report --reporter=text-lcov | coveralls && rm -r coverage",
-        "codeql": "nyc report --reporter=text-lcov | codeql-agent scan .",
+        "codeql": "codeql database create codeql-db --language='javascript' --overwrite && codeql database analyze codeql-db --format='sarif-latest' --output=codeql.txt",
         "postinstall": "patch-package"
     },
     "nyc": {
