@@ -18,11 +18,13 @@ connection.connect = async function (options) {
             cxn = new Redis({
                 sentinels: options.sentinels,
                 ...options.options,
+                family: 6,
             });
         } else if (redis_socket_or_host && String(redis_socket_or_host).indexOf('/') >= 0) {
             // If redis.host contains a path name character, use the unix dom sock connection. ie, /tmp/redis.sock
             cxn = new Redis({
                 ...options.options,
+                family: 6,
                 path: redis_socket_or_host,
                 password: options.password,
                 db: options.database,
@@ -31,6 +33,7 @@ connection.connect = async function (options) {
             // Else, connect over tcp/ip
             cxn = new Redis({
                 ...options.options,
+                family: 6,
                 host: redis_socket_or_host,
                 port: options.port,
                 password: options.password,
