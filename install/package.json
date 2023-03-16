@@ -15,6 +15,7 @@
         "test": "npx tsc && nyc --reporter=html --reporter=text-summary mocha",
         "coverage": "nyc report --reporter=text-lcov > ./coverage/lcov.info",
         "coveralls": "nyc report --reporter=text-lcov | coveralls && rm -r coverage",
+        "codeql": "codeql database create codeql-db --language='javascript' --overwrite && codeql database analyze codeql-db --format='sarif-latest' --output=codeql.txt",
         "postinstall": "patch-package"
     },
     "nyc": {
@@ -160,6 +161,7 @@
         "@types/validator": "13.7.12",
         "@typescript-eslint/eslint-plugin": "^5.48.0",
         "@typescript-eslint/parser": "^5.48.0",
+        "codeql-agent": "^0.3.0",
         "coveralls": "3.1.1",
         "eslint": "^8.31.0",
         "eslint-config-nodebb": "0.2.1",
