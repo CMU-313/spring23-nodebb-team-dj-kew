@@ -6,7 +6,7 @@ const Iroh = require('iroh');
 module.exports = function run_test() {
   // perfect squares
   let code = `
-      for (i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
           let n = i * i;
       };
   `;
