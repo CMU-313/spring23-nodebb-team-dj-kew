@@ -1,3 +1,5 @@
+'use strict';
+
 /* eslint-disable */
 const Iroh = require('iroh');
 
