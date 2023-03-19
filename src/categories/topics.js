@@ -188,11 +188,11 @@ module.exports = function (Categories) {
         return await topics_1.default.tools.checkPinExpiry(pinnedTids);
     };
     Categories.modifyTopicsByPrivilege = function (topics, privileges) {
-        if (!Array.isArray(topics) || !topics.length || privileges.view_deleted) {
+        if (!Array.isArray(topics) || !topics.length) {
             return;
         }
         topics.forEach((topic) => {
-            if (!topic.scheduled && topic.deleted && !topic.isOwner) {
+            if (!topic.scheduled && topic.deleted && !topic.isOwner && !privileges.view_deleted) {
                 topic.title = '[[topic:topic_is_deleted]]';
                 if (topic.hasOwnProperty('titleRaw')) {
                     topic.titleRaw = '[[topic:topic_is_deleted]]';
