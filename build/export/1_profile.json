@@ -1,0 +1,86 @@
+{
+    "user": {
+        "username": "emma",
+        "userslug": "emma",
+        "accounttype": "student",
+        "email": "emmak@andrew.cmu.edu",
+        "joindate": "1675824723272",
+        "lastonline": "1676142453928",
+        "status": "online",
+        "uid": "1",
+        "password:shaWrapped": "1",
+        "email:confirmed": "1",
+        "groupTitle": "[\"administrators\"]",
+        "topiccount": "6",
+        "lastposttime": "1676142473307",
+        "postcount": "7",
+        "rss_token": "b4f68a4f-b781-49d2-896f-8adfad9edf2b"
+    },
+    "settings": null,
+    "ips": [
+        "127.0.0.1"
+    ],
+    "sessions": [
+        {
+            "ip": "127.0.0.1",
+            "uuid": "16091501-9bee-49d7-bdca-f96493c00645",
+            "datetime": 1675824933936,
+            "platform": "Linux",
+            "browser": "Firefox",
+            "version": "103.0",
+            "current": false,
+            "datetimeISO": "2023-02-08T02:55:33.936Z"
+        }
+    ],
+    "usernames": [
+        {
+            "value": "emma",
+            "timestamp": 1675824723272,
+            "timestampISO": "2023-02-08T02:52:03.272Z"
+        }
+    ],
+    "emails": [
+        {
+            "value": "emmak@andrew.cmu.edu",
+            "timestamp": 1675824723786,
+            "timestampISO": "2023-02-08T02:52:03.786Z"
+        }
+    ],
+    "messages": [],
+    "bookmarks": [],
+    "watchedTopics": [
+        {
+            "tid": "1",
+            "title": "Welcome to your NodeBB!",
+            "timestamp": "1675824723905"
+        },
+        {
+            "tid": "2",
+            "title": "test",
+            "timestamp": "1675827046768"
+        },
+        {
+            "tid": "3",
+            "title": "unread test",
+            "timestamp": "1676045758576"
+        },
+        {
+            "tid": "4",
+            "title": "logging this",
+            "timestamp": "1676137449418"
+        },
+        {
+            "tid": "5",
+            "title": "yet another test",
+            "timestamp": "1676137900312"
+        },
+        {
+            "tid": "6",
+            "title": "testing anon post",
+            "timestamp": "1676142473307"
+        }
+    ],
+    "upvoted": [],
+    "downvoted": [],
+    "following": []
+}
