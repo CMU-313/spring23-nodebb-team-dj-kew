@@ -1,39 +1,4 @@
-<!-- IF breadcrumbs.length -->
-<ol class="breadcrumb" itemscope="itemscope" itemprop="breadcrumb" itemtype="http://schema.org/BreadcrumbList">
-    {{{each breadcrumbs}}}
-    <li<!-- IF @last --> component="breadcrumb/current"<!-- ENDIF @last --> itemscope="itemscope" itemprop="itemListElement" itemtype="http://schema.org/ListItem" <!-- IF @last -->class="active"<!-- ENDIF @last -->>
-        <meta itemprop="position" content="{@index}" />
-        {{{ if ./url }}}<a href="{breadcrumbs.url}" itemprop="item">{{{ end }}}
-            <span itemprop="name">
-                {breadcrumbs.text}
-                <!-- IF @last -->
-                <!-- IF !feeds:disableRSS -->
-                <!-- IF rssFeedUrl --><a target="_blank" href="{rssFeedUrl}" itemprop="item"><i class="fa fa-rss-square"></i></a><!-- ENDIF rssFeedUrl --><!-- ENDIF !feeds:disableRSS -->
-                <!-- ENDIF @last -->
-            </span>
-        {{{ if ./url }}}</a>{{{ end }}}
-    </li>
-    {{{end}}}
-</ol>
-<!-- ENDIF breadcrumbs.length -->
-
-<div data-widget-area="header">
-    {{{each widgets.header}}}
-    {{widgets.header.html}}
-    {{{end}}}
-</div>
-<div class="row">
-    <div class="<!-- IF widgets.sidebar.length -->col-lg-9 col-sm-12<!-- ELSE -->col-lg-12<!-- ENDIF widgets.sidebar.length -->">
-        <h1 class="career-title">Career</h1>
-        <p>
-            Welcome to the careers page! This is a brand new feature added to allow 
-            students to connect with various job recruiters.
-        </p>
-        <!-- IF (!accountType || (accountType == "instructor")) -->
-        This page is only available for students and recruiters.
-        <!-- ELSE -->
-            <!-- IF (accountType == "student") -->
-                <div>
+<div>
     <!-- IF newAccount -->
         Ready to get started? Sign up below and find your next job opportunity!
     <!-- ELSE -->
@@ -142,51 +107,4 @@
         <input id="noscript" type="hidden" name="noscript" value="true" />
         <input type="hidden" name="_csrf" value="{config.csrf_token}" />
     </form>
-</div>
-
-            <!-- END -->
-            <!-- IF (accountType == "recruiter") -->
-                <div>
-    Below is a list of all students who have signed up for this feature. Our new 
-    ML-based system also provides a recommendation based on intial student application
-    details. 
-
-    Note: The ML system is currently under testing and should only be taken as a 
-    recommendation, not an official decision.
-</div>
-<div class="career-block">
-    {{{each allData}}}
-        <div class="card" style="width: 28rem;">
-            <div class="card-body">
-                <div class="card-title">
-                    {../student_id}
-                </div>
-                <div class="card-text">
-                    Major: {../major} <br/>
-                    GPA: {../gpa} <br/>
-                    Extracurricular: {../extra_curricular} <br/>
-                    # Prog Languages: {../num_programming_languages} <br/>
-                    # Past Internships: {../num_past_internships} <br/>
-                </div>
-                <div class="prediction" style={function.getPredictionColor, ../prediction}>
-                    {function.formatPrediction, ../prediction}
-                </div>
-            </div>
-        </div>
-    {{{end}}}    
-</div>
-
-            <!-- END -->
-        <!-- END -->
-    </div>
-    <div data-widget-area="sidebar" class="col-lg-3 col-sm-12 <!-- IF !widgets.sidebar.length -->hidden<!-- ENDIF !widgets.sidebar.length -->">
-        {{{each widgets.sidebar}}}
-        {{widgets.sidebar.html}}
-        {{{end}}}
-    </div>
-</div>
-<div data-widget-area="footer">
-    {{{each widgets.footer}}}
-    {{widgets.footer.html}}
-    {{{end}}}
 </div>
