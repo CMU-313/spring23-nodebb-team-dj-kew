@@ -9,9 +9,10 @@ ENV NODE_ENV $NODE_ENV
 
 COPY --chown=node:node install/package.json /usr/src/app/package.json
 
+RUN npm install -g typescript
+
 USER node
 
-RUN npm install -g typescript
 
 RUN npm install --only=prod && \
     npm cache clean --force
