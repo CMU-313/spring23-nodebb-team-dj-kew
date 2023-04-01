@@ -340,12 +340,12 @@ module.exports = function (utils, Benchpress, relative_path) {
     }
 
     function getPredictionColor(prediction) {
-        if (prediction === 1) { return `"background-color: rgb(0, 255, 0);"`; }
+        if (prediction == 1) { return `"background-color: rgb(0, 255, 0);"`; }
         return `"background-color: rgb(255, 0, 0);"`;
     }
 
     function formatPrediction(prediction) {
-        if (prediction === 1) return "Good";
+        if (prediction == 1) return "Good";
         return "Poor";
     }
 
