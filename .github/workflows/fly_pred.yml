@@ -1,7 +1,8 @@
 name: Fly Deploy Model Prediction
 on:
   push:
-    branches: ["main", "career-model/dev"]
+    branches:
+      - main
 jobs:
   deploy:
     name: Deploy app
