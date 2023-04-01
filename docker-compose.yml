@@ -9,6 +9,8 @@ services:
       - prediction
     expose:
       - 4567 # use a reverse proxy like Traefik
+    ports:
+      - "4567:4567"
 
   db:
     image: mongo:bionic
@@ -23,6 +25,7 @@ services:
   
   prediction:
     build: ./career-model/
+    restart: unless-stopped
     expose: 
       - 8080
 
