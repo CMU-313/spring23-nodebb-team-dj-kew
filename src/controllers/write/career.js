@@ -4,6 +4,7 @@ const helpers = require('../helpers');
 const user = require('../../user');
 const db = require('../../database');
 const fetch = require("node-fetch");
+const nconf = require('nconf');
 
 const Career = module.exports;
 
@@ -21,7 +22,9 @@ Career.register = async (req, res) => {
             num_past_internships: userData.num_past_internships,
         };
 
-        const APIEndpoint = "http://127.0.0.1:8080/prediction"
+        const pred = nconf.get('prediction');
+        const uri = `${pred.host}:${pred.port}`
+        const APIEndpoint = `http://${uri}/${pred.endpoint}`
         const response = await fetch(APIEndpoint, {
             method: "POST",
             body: JSON.stringify(userCareerData),
