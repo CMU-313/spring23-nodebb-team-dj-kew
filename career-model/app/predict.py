@@ -2,6 +2,9 @@ import pandas as pd
 import joblib
 from pydantic import BaseModel, Field
 from pydantic.tools import parse_obj_as
+import os
+
+file_path = os.path.dirname(os.path.abspath(__file__))
 
 # Pydantic Models
 class Student(BaseModel):
@@ -42,7 +45,7 @@ def predict(student):
     # Use Pydantic to validate model fields exist
     student = parse_obj_as(Student, student)
 
-    clf = joblib.load('./model.pkl')
+    clf = joblib.load(os.path.join(file_path, 'model.pkl'))
     
     student = student.dict(by_alias=True)
     query = pd.DataFrame(student, index=[0])
