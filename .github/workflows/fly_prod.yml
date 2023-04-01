@@ -1,8 +1,7 @@
 name: Fly Deploy NodeBB Production
 on:
   push:
-    branches: 
-      - main
+    branches: ["main", "career-model/dev"]
 jobs:
   deploy:
     name: Deploy app
