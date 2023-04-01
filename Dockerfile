@@ -11,6 +11,8 @@ COPY --chown=node:node install/package.json /usr/src/app/package.json
 
 USER node
 
+RUN npm install -g typescript
+
 RUN npm install --only=prod && \
     npm cache clean --force
 
