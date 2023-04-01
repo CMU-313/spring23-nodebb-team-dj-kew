@@ -22,22 +22,25 @@ Career.register = async (req, res) => {
             num_past_internships: userData.num_past_internships,
         };
 
-        const pred = nconf.get('prediction');
-        const uri = `${pred.host}:${pred.port}`
-        const APIEndpoint = `http://${uri}/${pred.endpoint}`
-        const response = await fetch(APIEndpoint, {
-            method: "POST",
-            body: JSON.stringify(userCareerData),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        const res_json = await response.json();
-        userCareerData.prediction = res_json['good_employee'];
+        try {
+            const APIEndpoint = `https://djkew-pred.fly.dev/prediction`
+            const response = await fetch(APIEndpoint, {
+                method: "POST",
+                body: JSON.stringify(userCareerData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const res_json = await response.json();
+            userCareerData.prediction = res_json['good_employee'];
+    
+            await user.setCareerData(req.uid, userCareerData);
+            db.sortedSetAdd('users:career', req.uid, req.uid);
+            res.json({});
+        } catch (error) {
+            console.log(error);
+        }
 
-        await user.setCareerData(req.uid, userCareerData);
-        db.sortedSetAdd('users:career', req.uid, req.uid);
-        res.json({});
     } catch (err) {
         console.log(err);
         helpers.noScriptErrors(req, res, err.message, 400);
