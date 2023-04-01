@@ -1,7 +1,7 @@
 post:
   tags:
     - career
-  summary: 
+  summary: Register Career Data 
   description: This operation registers a user's career data 
   requestBody:
     required: true

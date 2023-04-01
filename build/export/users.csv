@@ -1,7 +1,5 @@
 email,username,uid,ip
-test@example.org,admin,1,""
-unpriv@example.org,unpriv,2,""
-,deleteme,3,""
-,deleteme 0,4,""
-,deleteme 1,5,""
-,deleteme 2,6,""
+,admin,1,"127.0.0.1"
+,regular,2,""
+,regular2,3,""
+,moderator,4,""
