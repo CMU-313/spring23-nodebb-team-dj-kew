@@ -1,0 +1,41 @@
+post:
+  tags:
+    - career
+  summary: 
+  description: This operation registers a user's career data 
+  requestBody:
+    required: true
+    content: 
+      application/json:
+        schema:
+          type: object
+          properties:
+            student_id:
+              type: string
+            major: 
+              type: string
+            age: 
+              type: string
+            gender:
+              type: string
+            gpa: 
+              type: string
+            extra_curricular: 
+              type: string
+            num_programming_languages: 
+              type: string
+            num_past_internships:
+              type: string
+  responses:
+    '200':
+      description: User successfully registered
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: ../../components/schemas/Status.yaml#/Status
+              response:
+                type: object
+                properties: {}
