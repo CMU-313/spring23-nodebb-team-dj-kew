@@ -33,11 +33,4 @@ post:
         application/json:
           schema:
             type: object
-            properties:
-              status:
-                $ref: ../../components/schemas/Status.yaml#/Status
-                nullable: true
-              response:
-                type: object
-                properties: {}
-                nullable: true
+            properties: {}
