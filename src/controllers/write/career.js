@@ -1,10 +1,9 @@
 'use strict';
 
+const fetch = require('node-fetch');
 const helpers = require('../helpers');
 const user = require('../../user');
 const db = require('../../database');
-const fetch = require("node-fetch");
-const nconf = require('nconf');
 
 const Career = module.exports;
 
@@ -23,24 +22,23 @@ Career.register = async (req, res) => {
         };
 
         try {
-            const APIEndpoint = `https://djkew-pred.fly.dev/prediction`
+            const APIEndpoint = `https://djkew-pred.fly.dev/prediction`;
             const response = await fetch(APIEndpoint, {
-                method: "POST",
+                method: 'POST',
                 body: JSON.stringify(userCareerData),
                 headers: {
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
             });
             const res_json = await response.json();
-            userCareerData.prediction = res_json['good_employee'];
-    
+            userCareerData.prediction = res_json.good_employee;
+
             await user.setCareerData(req.uid, userCareerData);
             db.sortedSetAdd('users:career', req.uid, req.uid);
             res.json({});
         } catch (error) {
             console.log(error);
         }
-
     } catch (err) {
         console.log(err);
         helpers.noScriptErrors(req, res, err.message, 400);

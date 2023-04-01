@@ -6,6 +6,7 @@ const plugins = require('../../plugins');
 const middleware = require('../../middleware');
 const writeControllers = require('../../controllers/write');
 const helpers = require('../../controllers/helpers');
+
 const Write = module.exports;
 
 Write.reload = async (params) => {

@@ -11,6 +11,6 @@ module.exports = function () {
     const middlewares = [middleware.ensureLoggedIn, middleware.canChat];
 
     setupApiRoute(router, 'post', '/register', [...middlewares], controllers.write.career.register);
-    
+
     return router;
 };
