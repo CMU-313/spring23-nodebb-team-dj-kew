@@ -14,7 +14,7 @@ RUN npm install -g typescript
 USER node
 
 
-RUN npm install --only=prod && \
+RUN npm install && \
     npm cache clean --force
 
 COPY --chown=node:node . /usr/src/app
