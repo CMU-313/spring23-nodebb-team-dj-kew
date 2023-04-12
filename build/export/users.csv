@@ -1,0 +1,5 @@
+email,username,uid,ip
+,admin,1,"127.0.0.1"
+,regular,2,""
+,regular2,3,""
+,moderator,4,""

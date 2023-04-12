@@ -1,0 +1,40 @@
+{
+    "user": {
+        "username": "admin",
+        "userslug": "admin",
+        "accounttype": "student",
+        "email": "",
+        "joindate": "1680202729996",
+        "lastonline": "1680202729996",
+        "status": "online",
+        "uid": "1",
+        "password:shaWrapped": "1",
+        "groupTitle": "[\"administrators\"]",
+        "topiccount": "1",
+        "lastposttime": "1680202730449",
+        "postcount": "1"
+    },
+    "settings": null,
+    "ips": [],
+    "sessions": [],
+    "usernames": [
+        {
+            "value": "admin",
+            "timestamp": 1680202729996,
+            "timestampISO": "2023-03-30T18:58:49.996Z"
+        }
+    ],
+    "emails": [],
+    "messages": [],
+    "bookmarks": [],
+    "watchedTopics": [
+        {
+            "tid": "1",
+            "title": "Welcome to your NodeBB!",
+            "timestamp": "1680202730447"
+        }
+    ],
+    "upvoted": [],
+    "downvoted": [],
+    "following": []
+}
